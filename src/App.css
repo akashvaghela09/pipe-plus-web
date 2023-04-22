@@ -1,3 +1,16 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.bw {
+  border: 1px solid white;
+}
+
+
+.br {
+  border: 1px solid rgb(163, 16, 16);
 }
