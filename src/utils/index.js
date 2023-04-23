@@ -1,0 +1,1 @@
+export { requestFullScreenEnter, requestFullScreenExit } from './fullscreen';
