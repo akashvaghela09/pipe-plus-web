@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiFullscreen } from 'react-icons/bi';
 import { IoMdSettings, IoMdPause } from 'react-icons/io';
 import { FaPause, FaPlay, FaPauseCircle, } from 'react-icons/fa';
@@ -8,14 +8,16 @@ import { RiEqualizerLine, RiFullscreenFill } from 'react-icons/ri';
 import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 } from 'react-icons/im';
 import { IconWrapper } from '../';
 
-const Controls = ({ handlePlayback, isPlaying }) => {
+const Controls = ({ isPlaying, handlePlayback, handleFullScreen, handleVolumeChange }) => {
 
-    const [volume, setVolume] = useState(0);
+    const [volume, setVolume] = useState(0.5);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);
+
 
     const handleChange = (e) => {
         let newVolume = e.target.value;
         setVolume(newVolume);
+        handleVolumeChange(newVolume);
     }
 
     return (
@@ -65,25 +67,31 @@ const Controls = ({ handlePlayback, isPlaying }) => {
                     {
                         volumeBarVisible &&
                         <input
-                        value={volume}
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        onChange={(e) => handleChange(e)}
+                            value={volume}
+                            type="range"
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            onChange={(e) => handleChange(e)}
                         />
                     }
+
+                    {/* Add buffer area for comfertable volume change. this gives extra area to mouseleave event */}
+                    {
+                        volumeBarVisible &&
+                        <div className='ml-2' />
+                    }
                 </div>
-                    <p className='text-gray-400 text-xs whitespace-nowrap'>
-                        00:00 / 00:00
-                    </p>
+                <p className='text-gray-400 text-xs whitespace-nowrap'>
+                    00:00 / 00:00
+                </p>
             </div>
             <div className='flex gap-3 p-3 items-center'>
                 <IconWrapper>
                     <IoMdSettings />
                 </IconWrapper>
                 <IconWrapper>
-                    <RiFullscreenFill />
+                    <RiFullscreenFill onClick={() => handleFullScreen()} />
                 </IconWrapper>
             </div>
         </div>
