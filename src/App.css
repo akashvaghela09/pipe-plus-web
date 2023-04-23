@@ -4,6 +4,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  background-color: #0f0f0f;
 }
 
 .bw {
@@ -13,4 +14,28 @@
 
 .br {
   border: 1px solid rgb(163, 16, 16);
+}
+
+/* styles.css */
+/* For webkit-based browsers */
+.pp_input::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px; /* Adjust the thumb width */
+  height: 10px; /* Adjust the thumb height */
+  background-color: red; /* Thumb color */
+  border: 2px solid red; /* Thumb border color */
+  border-radius: 50%; /* Make the thumb circular */
+  cursor: pointer; /* Show a pointer cursor on hover */
+  display: none;
+}
+
+/* For Firefox */
+.pp_input::-moz-range-thumb {
+  width: 10px; /* Adjust the thumb width */
+  height: 10px; /* Adjust the thumb height */
+  background-color: red; /* Thumb color */
+  border: 2px solid red; /* Thumb border color */
+  border-radius: 50%; /* Make the thumb circular */
+  cursor: pointer; /* Show a pointer cursor on hover */
+  
 }
