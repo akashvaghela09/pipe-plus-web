@@ -7,8 +7,13 @@ import { BsSpeedometer2 } from 'react-icons/bs';
 import { RiEqualizerLine, RiFullscreenFill } from 'react-icons/ri';
 import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 } from 'react-icons/im';
 import { IconWrapper } from '../';
+import { useSelector } from 'react-redux';
 
-const Controls = ({ isPlaying, handlePlayback, handleFullScreen, handleVolumeChange }) => {
+const Controls = ({ handlePlayback, handleFullScreen, handleVolumeChange }) => {
+
+    const {
+        isPlaying
+    } = useSelector(state => state.player);
 
     const [volume, setVolume] = useState(0.5);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);

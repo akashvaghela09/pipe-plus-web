@@ -2,11 +2,18 @@ import React, { useEffect, useState, useRef } from 'react';
 import ReactPlayer from 'react-player'
 import { Controls, ProgressBar } from "../";
 import { requestFullScreenEnter, requestFullScreenExit } from '../../utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPlayStatus } from '../../redux/player/actions';
 
 export const Player = () => {
 
+    const dispatch = useDispatch();
+
+    const {
+        isPlaying
+    } = useSelector(state => state.player);
+
     const [isReady, setIsReady] = useState(true);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [totalDuration, setTotalDuration] = useState(0);
@@ -17,8 +24,7 @@ export const Player = () => {
     let videoUrl = 'https://pipe-plus-proxy.app3.in/videoplayback?expire=1690053297&ei=Uda7ZJjQO8eQsfIPl_ypoAM&ip=164.92.105.139&id=o-AErmFBOQVXmWc8wCQPiOCyCJ_WmhWPvDV6E3tfuAxWmJ&itag=18&source=youtube&requiressl=yes&mh=z0&mm=31%2C29&mn=sn-n4v7sns7%2Csn-o097znzk&ms=au%2Crdu&mv=m&mvi=3&pl=21&initcwndbps=230000&spc=Ul2Sq6DOUmxAFO-2zCZy2gJwFjfray4&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=93.738&lmt=1665394396784533&mt=1690031346&fvip=1&fexp=24007246%2C51000022&beids=24350017&c=ANDROID&txp=4530434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRAIgQ-2doYgOoUDyBo3CeqQlkGJ2csJv1mzNeuIY-jnYK_YCIF8isNGuD5T0_vwNDHQA30jk9Cpep28O_qw7dfLA5m30&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRgIhAPZIsb0M0J0Y8kIVItjh9bhlri0EPnTB6QguFLUgRlswAiEA6KjOZ7Uc-GRm7fu8Gapf0-nI6GkIEvd2-tWIMreq0eQ%3D&cpn=MSrSFDpozZPzZA-0&host=rr3---sn-n4v7sns7.googlevideo.com';
 
     const handlePlayback = () => {
-        console.log('Play Video Clicked', isPlaying ? 'Pause' : 'Play');
-        setIsPlaying(!isPlaying);
+        dispatch(setPlayStatus(!isPlaying));
     }
 
     const handleFullScreen = () => {
