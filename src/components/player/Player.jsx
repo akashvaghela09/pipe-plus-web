@@ -1,14 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import ReactPlayer from 'react-player'
 import { Controls, ProgressBar } from "../";
 import { requestFullScreenEnter, requestFullScreenExit } from '../../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPlayStatus } from '../../redux/player/actions';
+import data from './../../data.json';
 
 export const Player = () => {
-
     const dispatch = useDispatch();
 
+    const { videoStreams, thumbnailUrl } = data;
+    let url360p = videoStreams['360p'].url;
+    let url720p = videoStreams['720p'].url;
+    const [videoUrl, setVideoUrl] = useState(url360p);
+    const [amountLoaded, setAmountLoaded] = useState(0);
+    const [amountPlayed, setAmountPlayed] = useState(0);
+    const [progress, setProgress] = useState(0);
+    const videoRef = useRef(null);
     const {
         isPlaying
     } = useSelector(state => state.player);
@@ -16,15 +23,17 @@ export const Player = () => {
     const [isReady, setIsReady] = useState(true);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [volume, setVolume] = useState(0.5);
-    const [totalDuration, setTotalDuration] = useState(0);
-    const [amountLoaded, setAmountLoaded] = useState(0);
-    const [amountPlayed, setAmountPlayed] = useState(0);
-
-    let thumbnailUrl = "https://pipe-plus-proxy.app3.in/vi_webp/ppBe8cHQkTs/maxresdefault.webp?host=i.ytimg.com";
-    let videoUrl = 'https://pipe-plus-proxy.app3.in/videoplayback?expire=1690053297&ei=Uda7ZJjQO8eQsfIPl_ypoAM&ip=164.92.105.139&id=o-AErmFBOQVXmWc8wCQPiOCyCJ_WmhWPvDV6E3tfuAxWmJ&itag=18&source=youtube&requiressl=yes&mh=z0&mm=31%2C29&mn=sn-n4v7sns7%2Csn-o097znzk&ms=au%2Crdu&mv=m&mvi=3&pl=21&initcwndbps=230000&spc=Ul2Sq6DOUmxAFO-2zCZy2gJwFjfray4&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=93.738&lmt=1665394396784533&mt=1690031346&fvip=1&fexp=24007246%2C51000022&beids=24350017&c=ANDROID&txp=4530434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRAIgQ-2doYgOoUDyBo3CeqQlkGJ2csJv1mzNeuIY-jnYK_YCIF8isNGuD5T0_vwNDHQA30jk9Cpep28O_qw7dfLA5m30&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRgIhAPZIsb0M0J0Y8kIVItjh9bhlri0EPnTB6QguFLUgRlswAiEA6KjOZ7Uc-GRm7fu8Gapf0-nI6GkIEvd2-tWIMreq0eQ%3D&cpn=MSrSFDpozZPzZA-0&host=rr3---sn-n4v7sns7.googlevideo.com';
 
     const handlePlayback = () => {
         dispatch(setPlayStatus(!isPlaying));
+
+        if (videoRef.current) {
+            if (isPlaying) {
+                videoRef.current.pause();
+            } else {
+                videoRef.current.play();
+            }
+        }
     }
 
     const handleFullScreen = () => {
@@ -37,23 +46,62 @@ export const Player = () => {
         }
     };
 
+    const handleQualityChange = (event) => {
+        const selectedQuality = event.target.value;
+        setVideoUrl(selectedQuality);
+
+        if (videoRef.current) {
+            videoRef.current.load();
+            videoRef.current.play();
+        }
+    };
+
+    const handleSeek = (value) => {
+        const desiredPercentageOfSeek = parseFloat(value);
+        const video = videoRef.current;
+        const duration = video.duration;
+        const time = duration * (desiredPercentageOfSeek / 100);
+        
+        video.currentTime = time;
+        setProgress(desiredPercentageOfSeek);
+    };
+
+    const processStreamValues = () => {
+        if (videoRef.current) {
+            const video = videoRef.current;
+            const playedFraction = video.currentTime / video.duration;
+            const loadedFraction = video.buffered.length ? video.buffered.end(0) / video.duration : 0;
+            const playedPercentage = Number(playedFraction * 100).toFixed(2);
+            const loadedPercentage = Number(loadedFraction * 100).toFixed(2);
+            setProgress(playedPercentage);
+            setAmountPlayed(playedPercentage);
+            setAmountLoaded(loadedPercentage);
+
+            // If the video has played to the end, pause it
+            if (+playedPercentage === 100) {
+                dispatch(setPlayStatus(false));
+            }
+        }
+    };
+
     const handleVolumeChange = (newVolume) => {
+        let player = videoRef.current;
+        player.volume = newVolume;
         setVolume(newVolume);
     }
 
-    const handleProgress = (progress) => {
-        const { loaded, played } = progress;
-
-        setAmountLoaded(Math.ceil(loaded * 100));
-        setAmountPlayed(Math.ceil(played * 100));
-    }
-
-    const updateDuration = (duration) => {
-        setTotalDuration(duration);
-    }
-
     useEffect(() => {
-        console.log('Player Mounted');
+        // Add the 'progress' event listener to the video element
+        if (videoRef.current) {
+            videoRef.current.addEventListener('timeupdate', processStreamValues);
+        }
+
+        // Remove the event listener when the component is unmounted
+        return () => {
+            if (videoRef.current) {
+                videoRef.current.removeEventListener('timeupdate', processStreamValues);
+            }
+        };
     }, []);
 
     const smPortrait = "relative aspect-video";
@@ -64,25 +112,22 @@ export const Player = () => {
 
     return (
         <div className={`bg-black transition-all  ${smPortrait} ${smLandscape} ${mdPortrait} ${isFullScreen ? mdLandscapeFullScreen : mdLandscape}`}>
-            {/* <div className={`relative w-full max-h-screen aspect-video border-[1px] border-slate-900 bg-black transition-all landscape:absolute landscape:top-1/2 landscape:left-1/2 landscape:transform landscape:-translate-x-1/2 landscape:-translate-y-1/2 landscape:h-full landscape:w-fit`}> */}
             {
                 isReady ?
                     <div className='w-full'>
-                        <ReactPlayer
-                            url={videoUrl}
-                            width='100%'
-                            height='100%'
-                            playing={isPlaying}
-                            controls={false}
+                        <video 
+                            src={videoUrl} 
+                            ref={videoRef} 
+                            className='w-full h-full object-cover'
                             volume={volume}
-                            onProgress={handleProgress}
-                            onDuration={updateDuration}
-                            onReady={() => console.log('Player is Ready')}
                         />
+
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
                         <ProgressBar 
+                            progress={progress}
                             amountLoaded={amountLoaded}
                             amountPlayed={amountPlayed}
+                            handleSeek={handleSeek}
                         />
                         <Controls
                             isPlaying={isPlaying}
