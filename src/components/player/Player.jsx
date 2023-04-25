@@ -15,7 +15,7 @@ export const Player = () => {
     const [amountLoaded, setAmountLoaded] = useState(0);
     const [amountPlayed, setAmountPlayed] = useState(0);
     const [progress, setProgress] = useState(0);
-    const videoRef = useRef(null);
+    const playerRef = useRef(null);
     const {
         isPlaying
     } = useSelector(state => state.player);
@@ -27,11 +27,11 @@ export const Player = () => {
     const handlePlayback = () => {
         dispatch(setPlayStatus(!isPlaying));
 
-        if (videoRef.current) {
+        if (playerRef.current) {
             if (isPlaying) {
-                videoRef.current.pause();
+                playerRef.current.pause();
             } else {
-                videoRef.current.play();
+                playerRef.current.play();
             }
         }
     }
@@ -50,9 +50,9 @@ export const Player = () => {
         const selectedQuality = event.target.value;
         setVideoUrl(selectedQuality);
 
-        if (videoRef.current) {
-            videoRef.current.load();
-            videoRef.current.play();
+        if (playerRef.current) {
+            playerRef.current.load();
+            playerRef.current.play();
         }
     };
 
@@ -61,7 +61,7 @@ export const Player = () => {
         handlePlayback();
 
         const desiredPercentageOfSeek = parseFloat(value);
-        const video = videoRef.current;
+        const video = playerRef.current;
         const duration = video.duration;
         const time = duration * (desiredPercentageOfSeek / 100);
         
@@ -69,12 +69,12 @@ export const Player = () => {
         setProgress(desiredPercentageOfSeek);
 
         // Resume video again after seeking
-        handlePlayback
+        handlePlayback();
     };
 
     const processStreamValues = () => {
-        if (videoRef.current) {
-            const video = videoRef.current;
+        if (playerRef.current) {
+            const video = playerRef.current;
             const playedFraction = video.currentTime / video.duration;
             const loadedFraction = video.buffered.length ? video.buffered.end(0) / video.duration : 0;
             const playedPercentage = Number(playedFraction * 100).toFixed(2);
@@ -91,21 +91,24 @@ export const Player = () => {
     };
 
     const handleVolumeChange = (newVolume) => {
-        let player = videoRef.current;
+        let player = playerRef.current;
         player.volume = newVolume;
         setVolume(newVolume);
     }
 
     useEffect(() => {
         // Add the 'progress' event listener to the video element
-        if (videoRef.current) {
-            videoRef.current.addEventListener('timeupdate', processStreamValues);
+        if (playerRef.current) {
+            playerRef.current.addEventListener('timeupdate', processStreamValues);
+
+            // Set default volume
+            playerRef.current.volume = 0.5;
         }
 
         // Remove the event listener when the component is unmounted
         return () => {
-            if (videoRef.current) {
-                videoRef.current.removeEventListener('timeupdate', processStreamValues);
+            if (playerRef.current) {
+                playerRef.current.removeEventListener('timeupdate', processStreamValues);
             }
         };
     }, []);
@@ -123,7 +126,7 @@ export const Player = () => {
                     <div className='w-full'>
                         <video 
                             src={videoUrl} 
-                            ref={videoRef} 
+                            ref={playerRef} 
                             className='w-full h-full object-cover'
                             volume={volume}
                         />
