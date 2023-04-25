@@ -57,6 +57,9 @@ export const Player = () => {
     };
 
     const handleSeek = (value) => {
+        // Pause video while seeking 
+        handlePlayback();
+
         const desiredPercentageOfSeek = parseFloat(value);
         const video = videoRef.current;
         const duration = video.duration;
@@ -64,6 +67,9 @@ export const Player = () => {
         
         video.currentTime = time;
         setProgress(desiredPercentageOfSeek);
+
+        // Resume video again after seeking
+        handlePlayback
     };
 
     const processStreamValues = () => {
