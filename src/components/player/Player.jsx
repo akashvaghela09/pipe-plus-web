@@ -57,19 +57,29 @@ export const Player = () => {
     };
 
     const handleSeek = (value) => {
-        // Pause video while seeking 
-        handlePlayback();
-
+        const player = playerRef.current;
         const desiredPercentageOfSeek = parseFloat(value);
-        const video = playerRef.current;
-        const duration = video.duration;
+        const duration = player.duration;
         const time = duration * (desiredPercentageOfSeek / 100);
-        
-        video.currentTime = time;
-        setProgress(desiredPercentageOfSeek);
 
-        // Resume video again after seeking
-        handlePlayback();
+        player.currentTime = time;
+        setProgress(desiredPercentageOfSeek);
+    };
+
+    const handleSeekMouseDown = () => {
+        if (playerRef.current) {
+            const player = playerRef.current;
+            player.removeEventListener('timeupdate', processStreamValues);
+            player.pause();
+        }
+    };
+
+    const handleSeekMouseUp = () => {
+        if (playerRef.current) {
+            const player = playerRef.current;
+            player.addEventListener('timeupdate', processStreamValues);
+            player.play();
+        }
     };
 
     const processStreamValues = () => {
@@ -124,19 +134,21 @@ export const Player = () => {
             {
                 isReady ?
                     <div className='w-full'>
-                        <video 
-                            src={videoUrl} 
-                            ref={playerRef} 
+                        <video
+                            src={videoUrl}
+                            ref={playerRef}
                             className='w-full h-full object-cover'
                             volume={volume}
                         />
 
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
-                        <ProgressBar 
+                        <ProgressBar
                             progress={progress}
                             amountLoaded={amountLoaded}
                             amountPlayed={amountPlayed}
                             handleSeek={handleSeek}
+                            handleSeekMouseDown={handleSeekMouseDown}
+                            handleSeekMouseUp={handleSeekMouseUp}
                         />
                         <Controls
                             isPlaying={isPlaying}

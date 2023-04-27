@@ -1,4 +1,4 @@
-export const ProgressBar = ({progress, amountLoaded, amountPlayed, handleSeek}) => {
+export const ProgressBar = ({progress, amountLoaded, amountPlayed, handleSeek, handleSeekMouseDown, handleSeekMouseUp}) => {
 
     return (
         <div className='absolute bottom-14 flex flex-col px-4 mx-5' style={{width: `calc(100% - 40px)`}}>
@@ -19,6 +19,8 @@ export const ProgressBar = ({progress, amountLoaded, amountPlayed, handleSeek}) 
                 step={0.001}
                 value={progress}
                 onChange={(e) => handleSeek(e.target.value)}
+                onMouseDown={handleSeekMouseDown}
+                onMouseUp={handleSeekMouseUp}
                 className='pp_input absolute top-0 left-0 appearance-none w-full h-4 pb-1 bg-transparent cursor-pointer z-50'
             />
             <div />
