@@ -1,7 +1,7 @@
 export const ProgressBar = ({progress, amountLoaded, amountPlayed, handleSeek, handleSeekMouseDown, handleSeekMouseUp}) => {
 
     return (
-        <div className='absolute bottom-14 flex flex-col px-4 mx-5' style={{width: `calc(100% - 40px)`}}>
+        <div className='absolute bottom-14 flex flex-col px-4 mx-2' style={{width: `calc(100% - 20px)`}}>
             <div className='absolute top-0 left-0 bg-zinc-800 h-1 mt-1'
                 style={{ width: `${100}%` }}
             />

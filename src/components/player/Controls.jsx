@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { BiFullscreen } from 'react-icons/bi';
-import { IoMdSettings, IoMdPause } from 'react-icons/io';
-import { FaPause, FaPlay, FaPauseCircle, } from 'react-icons/fa';
-import { FaVolumeLow, FaVolumeHigh, FaVolumeXmark, FaVolumeOff } from 'react-icons/fa6';
-import { BsSpeedometer2 } from 'react-icons/bs';
-import { RiEqualizerLine, RiFullscreenFill } from 'react-icons/ri';
+import React, { useState } from 'react';
+import { IoMdPause } from 'react-icons/io';
+import { FaPlay, FaPauseCircle, } from 'react-icons/fa';
 import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 } from 'react-icons/im';
 import { IconWrapper } from '../';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { PlayerSettings } from './PlayerSettings';
+import { PlayerFullScreen } from './PlayerFullScreen';
 
-const Controls = ({ handlePlayback, handleFullScreen, handleVolumeChange }) => {
-
-    const {
-        isPlaying
-    } = useSelector(state => state.player);
+export const Controls = ({ handlePlayback, handleVolumeChange }) => {
+    const dispatch = useDispatch();
+    const { isPlaying } = useSelector(state => state.player);
 
     const [volume, setVolume] = useState(0.5);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);
-
 
     const handleChange = (e) => {
         let newVolume = e.target.value;
@@ -92,15 +87,9 @@ const Controls = ({ handlePlayback, handleFullScreen, handleVolumeChange }) => {
                 </p>
             </div>
             <div className='flex gap-3 p-3 items-center'>
-                <IconWrapper>
-                    <IoMdSettings />
-                </IconWrapper>
-                <IconWrapper>
-                    <RiFullscreenFill onClick={() => handleFullScreen()} />
-                </IconWrapper>
+                <PlayerSettings />
+                <PlayerFullScreen />
             </div>
         </div>
     )
 };
-
-export { Controls };

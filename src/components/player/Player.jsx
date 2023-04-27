@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controls, ProgressBar } from "../";
-import { requestFullScreenEnter, requestFullScreenExit } from '../../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPlayStatus } from '../../redux/player/actions';
 import data from './../../data.json';
@@ -17,11 +16,10 @@ export const Player = () => {
     const [progress, setProgress] = useState(0);
     const playerRef = useRef(null);
     const {
-        isPlaying
+        isPlaying, isFullScreen
     } = useSelector(state => state.player);
 
     const [isReady, setIsReady] = useState(true);
-    const [isFullScreen, setIsFullScreen] = useState(false);
     const [volume, setVolume] = useState(0.5);
 
     const handlePlayback = () => {
@@ -35,16 +33,6 @@ export const Player = () => {
             }
         }
     }
-
-    const handleFullScreen = () => {
-        if (!isFullScreen) {
-            requestFullScreenEnter();
-            setIsFullScreen(true);
-        } else {
-            requestFullScreenExit();
-            setIsFullScreen(false);
-        }
-    };
 
     const handleQualityChange = (event) => {
         const selectedQuality = event.target.value;
@@ -153,7 +141,6 @@ export const Player = () => {
                         <Controls
                             isPlaying={isPlaying}
                             handlePlayback={handlePlayback}
-                            handleFullScreen={handleFullScreen}
                             handleVolumeChange={handleVolumeChange}
                         />
                     </div>
