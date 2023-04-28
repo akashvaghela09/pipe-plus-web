@@ -6,18 +6,16 @@ import { IconWrapper } from '../';
 import { useSelector, useDispatch } from 'react-redux';
 import { PlayerSettings } from './PlayerSettings';
 import { PlayerFullScreen } from './PlayerFullScreen';
+import { setPlayerVolume } from '../../redux/player/actions';
 
-export const Controls = ({ handlePlayback, handleVolumeChange }) => {
+export const Controls = ({ handlePlayback }) => {
     const dispatch = useDispatch();
-    const { isPlaying } = useSelector(state => state.player);
-
-    const [volume, setVolume] = useState(0.5);
+    const { isPlaying, volume } = useSelector(state => state.player);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);
 
-    const handleChange = (e) => {
+    const handleVolumeChange = (e) => {
         let newVolume = e.target.value;
-        setVolume(newVolume);
-        handleVolumeChange(newVolume);
+        dispatch(setPlayerVolume(newVolume));
     }
 
     return (
@@ -72,7 +70,7 @@ export const Controls = ({ handlePlayback, handleVolumeChange }) => {
                             min={0}
                             max={1}
                             step={0.01}
-                            onChange={(e) => handleChange(e)}
+                            onChange={(e) => handleVolumeChange(e)}
                         />
                     }
 

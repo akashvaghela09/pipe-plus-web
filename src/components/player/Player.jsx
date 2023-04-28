@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controls, ProgressBar } from "../";
 import { useDispatch, useSelector } from 'react-redux';
-import { setPlayStatus } from '../../redux/player/actions';
+import { setPlayStatus, setPlayer, setStreamValues } from '../../redux/player/actions';
 import data from './../../data.json';
 
 export const Player = () => {
@@ -11,25 +11,25 @@ export const Player = () => {
     let url360p = videoStreams['360p'].url;
     let url720p = videoStreams['720p'].url;
     const [videoUrl, setVideoUrl] = useState(url360p);
-    const [amountLoaded, setAmountLoaded] = useState(0);
-    const [amountPlayed, setAmountPlayed] = useState(0);
-    const [progress, setProgress] = useState(0);
     const playerRef = useRef(null);
     const {
-        isPlaying, isFullScreen
+        player,
+        isPlaying, 
+        isFullScreen,
+        volume,
+        streamValues
     } = useSelector(state => state.player);
 
     const [isReady, setIsReady] = useState(true);
-    const [volume, setVolume] = useState(0.5);
 
     const handlePlayback = () => {
         dispatch(setPlayStatus(!isPlaying));
 
-        if (playerRef.current) {
+        if (player) {
             if (isPlaying) {
-                playerRef.current.pause();
+                player.pause();
             } else {
-                playerRef.current.play();
+                player.play();
             }
         }
     }
@@ -38,48 +38,25 @@ export const Player = () => {
         const selectedQuality = event.target.value;
         setVideoUrl(selectedQuality);
 
-        if (playerRef.current) {
-            playerRef.current.load();
-            playerRef.current.play();
-        }
-    };
-
-    const handleSeek = (value) => {
-        const player = playerRef.current;
-        const desiredPercentageOfSeek = parseFloat(value);
-        const duration = player.duration;
-        const time = duration * (desiredPercentageOfSeek / 100);
-
-        player.currentTime = time;
-        setProgress(desiredPercentageOfSeek);
-    };
-
-    const handleSeekMouseDown = () => {
-        if (playerRef.current) {
-            const player = playerRef.current;
-            player.removeEventListener('timeupdate', processStreamValues);
-            player.pause();
-        }
-    };
-
-    const handleSeekMouseUp = () => {
-        if (playerRef.current) {
-            const player = playerRef.current;
-            player.addEventListener('timeupdate', processStreamValues);
+        if (player) {
+            player.load();
             player.play();
         }
     };
 
     const processStreamValues = () => {
-        if (playerRef.current) {
-            const video = playerRef.current;
-            const playedFraction = video.currentTime / video.duration;
-            const loadedFraction = video.buffered.length ? video.buffered.end(0) / video.duration : 0;
+        if (player) {
+            const playedFraction = player.currentTime / player.duration;
+            const loadedFraction = player.buffered.length ? player.buffered.end(0) / player.duration : 0;
             const playedPercentage = Number(playedFraction * 100).toFixed(2);
             const loadedPercentage = Number(loadedFraction * 100).toFixed(2);
-            setProgress(playedPercentage);
-            setAmountPlayed(playedPercentage);
-            setAmountLoaded(loadedPercentage);
+
+            dispatch(setStreamValues({
+                ...streamValues,
+                played: playedPercentage,
+                buffered: loadedPercentage,
+                seek: playedPercentage
+            }));
 
             // If the video has played to the end, pause it
             if (+playedPercentage === 100) {
@@ -88,19 +65,16 @@ export const Player = () => {
         }
     };
 
-    const handleVolumeChange = (newVolume) => {
-        let player = playerRef.current;
-        player.volume = newVolume;
-        setVolume(newVolume);
-    }
-
     useEffect(() => {
         // Add the 'progress' event listener to the video element
         if (playerRef.current) {
-            playerRef.current.addEventListener('timeupdate', processStreamValues);
+            const player = playerRef.current;
+            player.addEventListener('timeupdate', processStreamValues);
 
             // Set default volume
-            playerRef.current.volume = 0.5;
+            player.volume = 0.5;
+
+            dispatch(setPlayer(player));
         }
 
         // Remove the event listener when the component is unmounted
@@ -130,19 +104,8 @@ export const Player = () => {
                         />
 
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
-                        <ProgressBar
-                            progress={progress}
-                            amountLoaded={amountLoaded}
-                            amountPlayed={amountPlayed}
-                            handleSeek={handleSeek}
-                            handleSeekMouseDown={handleSeekMouseDown}
-                            handleSeekMouseUp={handleSeekMouseUp}
-                        />
-                        <Controls
-                            isPlaying={isPlaying}
-                            handlePlayback={handlePlayback}
-                            handleVolumeChange={handleVolumeChange}
-                        />
+                        <ProgressBar processStreamValues={processStreamValues}/>
+                        <Controls handlePlayback={handlePlayback} />
                     </div>
                     :
                     <img
