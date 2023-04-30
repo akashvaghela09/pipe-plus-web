@@ -10,11 +10,12 @@ import { setPlayerVolume } from '../../redux/player/actions';
 
 export const Controls = ({ handlePlayback }) => {
     const dispatch = useDispatch();
-    const { isPlaying, volume } = useSelector(state => state.player);
+    const { isPlaying, player, volume } = useSelector(state => state.player);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);
 
     const handleVolumeChange = (e) => {
         let newVolume = e.target.value;
+        player.volume = newVolume;
         dispatch(setPlayerVolume(newVolume));
     }
 
