@@ -78,7 +78,7 @@ export const pipePlus = {
 
         try {
             let res = await axios.get(`${config.baseUrl}/trending?region=${region}`)
-            data = res.data;
+            data = [...res.data];
         } catch (error) {
             console.log("Failed while fetching trending data", error);
         }
