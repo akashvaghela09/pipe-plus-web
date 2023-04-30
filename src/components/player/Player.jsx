@@ -10,7 +10,7 @@ export const Player = () => {
     const { videoStreams, thumbnailUrl } = data;
     let url360p = videoStreams['360p'].url;
     let url720p = videoStreams['720p'].url;
-    const [videoUrl, setVideoUrl] = useState(url360p);
+    const [videoUrl, setVideoUrl] = useState(url720p);
     const playerRef = useRef(null);
     const {
         player,
@@ -24,6 +24,12 @@ export const Player = () => {
 
     const handlePlayback = () => {
         dispatch(setPlayStatus(!isPlaying));
+
+        // If the video is being played for the first time, 
+        // add the 'timeupdate' event listener to the video element
+        if(streamValues.played === 0 && streamValues.buffered === 0) {
+            player.addEventListener('timeupdate', processStreamValues);
+        }
 
         if (player) {
             if (isPlaying) {
@@ -65,18 +71,22 @@ export const Player = () => {
         }
     };
 
-    useEffect(() => {
-        // Add the 'progress' event listener to the video element
+    const storePlayerRef = () => {
         if (playerRef.current) {
-            const player = playerRef.current;
-            player.addEventListener('timeupdate', processStreamValues);
+            const newPlayer = playerRef.current;
+            dispatch(setPlayer(newPlayer));
 
             // Set default volume
-            player.volume = 0.5;
-
-            dispatch(setPlayer(player));
+            newPlayer.volume = 1;
+        } else {
+            console.log("playerRef.current is null");
         }
+    }
 
+    useEffect(() => {
+        // Set the player reference
+        storePlayerRef();
+      
         // Remove the event listener when the component is unmounted
         return () => {
             if (playerRef.current) {
