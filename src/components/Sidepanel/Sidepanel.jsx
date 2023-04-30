@@ -36,9 +36,9 @@ export const Sidepanel = () => {
             route: '/music'
         },
         {
-            name: "Groups",
+            name: "Channel Groups",
             icon: <MdOutlinePermMedia />,
-            route: '/music'
+            route: '/channel-groups'
         }
     ]
 
@@ -56,7 +56,7 @@ export const Sidepanel = () => {
         {
             name: "Watch Later",
             icon: <MdOutlineWatchLater />,
-            route: '/watchlater'
+            route: '/watch-later'
         },
         {
             name: "Downloads",
@@ -66,7 +66,7 @@ export const Sidepanel = () => {
         {
             name: "Liked Videos",
             icon: <BiLike />,
-            route: '/likedvideos'
+            route: '/liked-videos'
         }
     ]
 

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { IoMdPause } from 'react-icons/io';
-import { FaPlay, FaPauseCircle, } from 'react-icons/fa';
+import { FaPlay } from 'react-icons/fa';
 import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 } from 'react-icons/im';
-import { IconWrapper } from '../';
 import { useSelector, useDispatch } from 'react-redux';
-import { PlayerSettings } from './PlayerSettings';
-import { PlayerFullScreen } from './PlayerFullScreen';
+import { IconWrapper, PlayerFullScreen, PlayerSettings } from '../';
 import { setPlayerVolume } from '../../redux/player/actions';
 
 export const Controls = ({ handlePlayback }) => {
