@@ -1,10 +1,16 @@
 import './App.css';
-import { Player } from './components';
+import { Header, Sidepanel } from './components';
+import { AllRoutes } from './routes';
 
 function App() {
+
   return (
     <div className="App flex flex-col">
-      <Player />
+      <Header />
+      <div className='w-full flex grow'>
+        <Sidepanel />
+        <AllRoutes />
+      </div>
     </div>
   );
 }
