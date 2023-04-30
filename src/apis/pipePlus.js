@@ -71,5 +71,18 @@ export const pipePlus = {
             console.log("Failed to get stream data", error);
         }
         return data;
+    },
+
+    getTrendingData: async (region) => {
+        let data = null;
+
+        try {
+            let res = await axios.get(`${config.baseUrl}/trending?region=${region}`)
+            data = res.data;
+        } catch (error) {
+            console.log("Failed while fetching trending data", error);
+        }
+
+        return data;
     }
 };
