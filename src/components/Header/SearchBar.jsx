@@ -1,45 +1,138 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react';
 import { BsSearch } from 'react-icons/bs';
+import { RxCross1 } from 'react-icons/rx';
+import { useDispatch, useSelector } from 'react-redux';
+import { setInputFocus, setSearchSuggestions } from '../../redux/searchbar/actions';
+import { pipePlus } from '../../apis/pipePlus';
+import { useNavigate } from 'react-router-dom';
 
 export const SearchBar = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const [inputFocus, setInputFocus] = useState(false);
+    const { isFocused, searchSuggestions } = useSelector((state) => state.searchbar);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedResultIndex, setSelectedResultIndex] = useState(-1);
+    const searchBarRef = useRef(null);
+    const iconRef = useRef(null);
 
-    const searchResults = [
-        "Search result 1",
-        "Search result 2",
-        "Search result 3",
-        "Search result 4",
-        "Search result 5",
-        "Search result 6",
-        "Search result 7",
-    ]
+    // Function to handle click on the search icon
+    const handleSearchIconClick = () => {
+        dispatch(setInputFocus(true));
+    };
+
+    const handleSearchQuery = async (query) => {
+        setSearchQuery(query);
+
+        if (query.length > 0) {
+            // let { items, nextpage } = await pipePlus.getSearchData(query);
+            let data = await pipePlus.getSuggestions(query);
+
+            dispatch(setSearchSuggestions([...data]));
+        }
+    }
+
+    const handleSearchSubmit = async () => {
+        if (searchQuery.length > 0) {
+            let { items, nextpage } = await pipePlus.getSearchData(searchQuery);
+            console.log(items);
+            // dispatch(setSearchSuggestions([...items]));
+            // navigate('/results');
+        }
+    }
+
+    const handleSearchCancel = () => {
+        setSearchQuery("");
+        dispatch(setSearchSuggestions([]));
+    }
+
+    // Function to handle click outside the search bar
+    const handleClickOutside = (event) => {
+        if (
+            searchBarRef.current &&
+            !searchBarRef.current.contains(event.target) &&
+            iconRef.current &&
+            !iconRef.current.contains(event.target)
+        ) {
+            dispatch(setInputFocus(false));
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit();
+        } else if (e.key === 'Escape') {
+            handleSearchCancel();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault(); // Prevent default scrolling behavior
+            setSelectedResultIndex((prevIndex) => Math.min(prevIndex + 1, searchSuggestions.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault(); // Prevent default scrolling behavior
+            setSelectedResultIndex((prevIndex) => Math.max(prevIndex - 1, -1));
+        }
+    };
+
+    useEffect(() => {
+        if (selectedResultIndex >= 0 && selectedResultIndex < searchSuggestions.length) {
+            setSearchQuery(searchSuggestions[selectedResultIndex]);
+        }
+    }, [selectedResultIndex]);
+
+    // Effect to add click event listener for handling clicks outside the search bar
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     return (
-        <div className='relative border-[#303030] border-[1px] bg-[#121212] flex w-[600px] rounded-full'>
-            {
-                inputFocus && <BsSearch className='text-lg text-slate-100  absolute top-3 left-5' />
-            }
-            <input onFocus={() => setInputFocus(true)} onBlur={() => setInputFocus(false)} className='w-11/12 bg-transparent outline-none focus:border-[1px] focus:border-[#1C62B9] rounded-l-full px-4 pl-14 text-slate-100' />
-            <div className='bg-[#212121] grow flex justify-center items-center py-3 rounded-r-full cursor-pointer'>
+        <div
+            ref={searchBarRef}
+            className='relative  bg-[#121212] flex w-[600px] rounded-full'
+        >
+            <div className='rounded-l-full grow flex items-stretch' style={{ border: isFocused === true ? "1px solid #1C62B9" : "1px solid #303030" }}>
+                {
+                    isFocused &&
+                    <div className='w-10 flex justify-end items-center'>
+                        <BsSearch className='text-lg text-slate-100 mr-1' />
+                    </div>
+                }
+                <input
+                    type='text'
+                    value={searchQuery}
+                    onFocus={() => dispatch(setInputFocus(true))}
+                    onChange={(e) => handleSearchQuery(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e)}
+                    className='w-11/12 bg-transparent outline-none rounded-l-full px-4 text-slate-100'
+                />
+                {
+                    isFocused && (
+                        <div onClick={() => handleSearchCancel()} className='absolute top-1 right-16 hover:bg-[#313131] h-8 w-8 rounded-full flex justify-center items-center cursor-pointer'>
+                            <RxCross1 className='text-lg text-slate-100' />
+                        </div>
+                    )
+                }
+            </div>
+            <div ref={iconRef} onClick={handleSearchIconClick} className='bg-[#212121] flex justify-center items-center py-3 w-14  rounded-r-full cursor-pointer'>
                 <BsSearch className='text-lg text-slate-100' />
             </div>
-
-            {
-                inputFocus &&
-                searchResults.length > 0 &&
+            {isFocused && searchSuggestions.length > 0 && (
                 <div className='absolute top-[60px] w-[600px] h-fit bg-[#212121] rounded-xl py-3 flex flex-col'>
-                    {
-                        searchResults.map((result, index) => {
-                            return (
-                                <div className='hover:bg-[#313131] flex justify-start items-center cursor-pointer' key={index}>
-                                    <BsSearch className='text-lg text-slate-100 mx-5 my-2' />
-                                    <p className='text-slate-100'>{result}</p>
-                                </div>
-                            )
-                        })}
+                    {searchSuggestions.map((result, index) => {
+                        return (
+                            <div
+                            key={index}
+                                className='hover:bg-[#313131] flex justify-start items-center cursor-pointer'
+                                style={{backgroundColor: selectedResultIndex === index ? "#313131" : ""}}
+                            >
+                                <BsSearch className='text-lg text-slate-100 mx-5 my-2' />
+                                <p className='text-slate-100'>{result}</p>
+                            </div>
+                        );
+                    })}
                 </div>
-            }
+            )}
         </div>
-    )
-}
+    );
+};
