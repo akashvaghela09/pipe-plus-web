@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BsSearch } from 'react-icons/bs';
 import { RxCross1 } from 'react-icons/rx';
 import { useDispatch, useSelector } from 'react-redux';
-import { setInputFocus, setSearchSuggestions } from '../../redux/searchbar/actions';
+import { setInputFocus, setSearchQuery, setSearchResults, setSearchSuggestions } from '../../redux/searchbar/actions';
 import { pipePlus } from '../../apis/pipePlus';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,8 +10,7 @@ export const SearchBar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { isFocused, searchSuggestions } = useSelector((state) => state.searchbar);
-    const [searchQuery, setSearchQuery] = useState('');
+    const { isFocused, searchSuggestions, searchQuery } = useSelector((state) => state.searchbar);
     const [selectedResultIndex, setSelectedResultIndex] = useState(-1);
     const searchBarRef = useRef(null);
     const iconRef = useRef(null);
@@ -22,10 +21,9 @@ export const SearchBar = () => {
     };
 
     const handleSearchQuery = async (query) => {
-        setSearchQuery(query);
+        dispatch(setSearchQuery(query));
 
         if (query.length > 0) {
-            // let { items, nextpage } = await pipePlus.getSearchData(query);
             let data = await pipePlus.getSuggestions(query);
 
             dispatch(setSearchSuggestions([...data]));
@@ -35,14 +33,15 @@ export const SearchBar = () => {
     const handleSearchSubmit = async () => {
         if (searchQuery.length > 0) {
             let { items, nextpage } = await pipePlus.getSearchData(searchQuery);
-            console.log(items);
-            // dispatch(setSearchSuggestions([...items]));
-            // navigate('/results');
+
+            dispatch(setSearchSuggestions([]));
+            dispatch(setSearchResults([...items]));
+            navigate('/results');
         }
     }
 
     const handleSearchCancel = () => {
-        setSearchQuery("");
+        dispatch(setSearchQuery(""));
         dispatch(setSearchSuggestions([]));
     }
 
@@ -74,7 +73,7 @@ export const SearchBar = () => {
 
     useEffect(() => {
         if (selectedResultIndex >= 0 && selectedResultIndex < searchSuggestions.length) {
-            setSearchQuery(searchSuggestions[selectedResultIndex]);
+            dispatch(setSearchQuery(searchSuggestions[selectedResultIndex]));
         }
     }, [selectedResultIndex]);
 
