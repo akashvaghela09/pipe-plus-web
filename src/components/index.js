@@ -17,4 +17,7 @@ export { Comment } from "./comment/Comment.jsx";
 export { CommentList } from "./comment/CommentList.jsx";
 export { Footer } from "./Footer.jsx";
 export { VideoCard } from "./VideoCard.jsx";
+export { ResultCard } from "./ResultCard.jsx";
+export { PlaylistCard } from "./PlaylistCard.jsx";
+export { ChannelCard } from "./ChannelCard.jsx";
 export { Sidepanel } from "./Sidepanel/Sidepanel.jsx";

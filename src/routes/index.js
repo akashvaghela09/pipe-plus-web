@@ -9,6 +9,7 @@ export { Library } from "./Library.jsx";
 export { LikedVideos } from "./LikedVideos.jsx";
 export { PageNotFound } from "./PageNotFound.jsx";
 export { Playlist } from "./Playlist.jsx";
+export { Results } from "./Results.jsx";
 export { Settings } from "./Settings.jsx";
 export { Shorts } from "./Shorts.jsx";
 export { Subscriptions } from "./Subscriptions.jsx";
