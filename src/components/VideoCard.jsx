@@ -31,7 +31,7 @@ export const VideoCard = ({ video }) => {
                 <div className='flex flex-col grow'>
                     <p className='text-slate-50 line-clamp-2 leading-6'>{title}</p>
                     <div className='flex items-center justify-start gap-2'>
-                        <p className='text-slate-100 opacity-50 text-sm line-clamp-1'>{uploaderName}</p>
+                        <p className='text-slate-100 opacity-50 text-sm line-clamp-1 hover:opacity-70 cursor-pointer'>{uploaderName}</p>
                         {
                             uploaderVerified && <TiTick className='text-xs bg-zinc-500 rounded-full'/>
                         }
@@ -39,8 +39,9 @@ export const VideoCard = ({ video }) => {
                     </div>
                     <div className='flex items-start justify-start gap-2'>
                         <p className='text-slate-100 opacity-50 text-sm'>{countViews(views)}</p>
-                        <p className='text-slate-100 opacity-50 text-sm'>•</p>
-                        <p className='text-slate-100 opacity-50 text-sm'>{uploadedDate}</p>
+                        {
+                            uploadedDate && <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
+                        }
                     </div>
                 </div>
             </div>   
