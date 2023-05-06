@@ -1,6 +1,6 @@
 import React from 'react'
 import { TiTick } from 'react-icons/ti';
-import { countDuration, countViews } from '../utils';
+import { formatTime, countViews } from '../utils';
 
 export const VideoCard = ({ video }) => {
     const { 
@@ -24,7 +24,7 @@ export const VideoCard = ({ video }) => {
                 src={thumbnail} 
                 className='w-full rounded-xl z-10 cursor-pointer'
             />
-            <p className='absolute bottom-1 right-1 px-1 rounded-md text-sm text-slate-50 bg-black'>{countDuration(duration)}</p>
+            <p className='absolute bottom-1 right-1 px-1 rounded-md text-sm text-slate-50 bg-black'>{formatTime(duration)}</p>
             </div>
             <div className='flex gap-2 py-2'>
                 <img src={uploaderAvatar} className='w-10 h-10 rounded-full'/>

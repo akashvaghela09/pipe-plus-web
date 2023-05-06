@@ -1,6 +1,6 @@
 import React from 'react'
 import { TiTick } from 'react-icons/ti';
-import { countDuration, countViews } from '../utils';
+import { formatTime, countViews } from '../utils';
 import { LuListVideo } from 'react-icons/lu';
 
 export const PlaylistCard = ({ video }) => {
