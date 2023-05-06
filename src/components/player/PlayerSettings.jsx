@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoMdSettings } from 'react-icons/io';
 import { PiCaretRightBold, PiCaretLeftBold } from 'react-icons/pi';
 import { RiEqualizerLine } from 'react-icons/ri';
 import { BsSpeedometer2 } from 'react-icons/bs';
 import { IconWrapper } from '../';
 import { useSelector, useDispatch } from 'react-redux';
-import { setPlaybackRate, setStreamQuality, setStreamSource } from '../../redux/player/actions';
+import { setPlayStatus, setPlaybackRate, setQualityUpdateStatus, setStreamPlayed, setStreamQuality, setStreamSource } from '../../redux/player/actions';
 
 export const PlayerSettings = (props, ref) => {
     const dispatch = useDispatch();
 
-    const { player, playbackRate, quality, streamMetadata, availableQualities } = useSelector((state) => state.player);
+    const { playbackRate, selectedQuality, streamMetadata, availableQualities, streamValues } = useSelector((state) => state.player);
     const { playableStreams } = streamMetadata;
     const [showSettings, setShowSettings] = useState(false);
     const [settingsType, setSettingsType] = useState('options'); // ['quality', 'speed']
@@ -23,13 +23,10 @@ export const PlayerSettings = (props, ref) => {
     };
 
     const handleSettingsOptionChange = (value) => {
-        console.log("Option change clicked ..");
         setSettingsType(value);
     }
 
     const handlePlaybackRateChange = (rate) => {
-        player.playbackRate = rate;
-
         dispatch(setPlaybackRate(rate));
         setSettingsType('options');
         setShowSettings(false);
@@ -37,12 +34,18 @@ export const PlayerSettings = (props, ref) => {
     }
 
     const handlePlaybackQualityChange = (value) => {
+        dispatch(setQualityUpdateStatus(true));
+        dispatch(setStreamSource({}));
         dispatch(setStreamQuality(value));
         setSettingsType('options');
+        
+        let playedSec = streamValues.playedSeconds;
+        dispatch(setStreamPlayed(playedSec));
 
-        let newSrc = [...playableStreams[value]];
-        player.src = newSrc[0].url;
-        player.play().catch((err) => console.log("Failed again ..."))
+        let newSource = {...playableStreams[value][0]};
+        dispatch(setStreamSource(newSource));
+
+        console.log("New source ...", newSource);
     }
 
     // Settings Options Components ******************************************************
@@ -70,7 +73,7 @@ export const PlayerSettings = (props, ref) => {
                     <p className='text-xs text-slate-100'>Quality</p>
                 </div>
                 <div className='flex items-center p-2'>
-                    <p className='text-xs text-slate-100'>{quality}</p>
+                    <p className='text-xs text-slate-100'>{selectedQuality}</p>
                     <IconWrapper>
                         <PiCaretRightBold />
                     </IconWrapper>
@@ -107,12 +110,11 @@ export const PlayerSettings = (props, ref) => {
             </div>
 
             {showSettings === true && settingsType === 'options' && (
-                <div className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
+                <div onMouseLeave={handleSettingsClick} className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
                     <QualitySettingsOption />
                     <SpeedSettingsOption />
                 </div>
             )}
-
 
             {showSettings === true && settingsType === 'quality' && (
                 <div className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
@@ -128,7 +130,7 @@ export const PlayerSettings = (props, ref) => {
                                     className='p-2 pl-10 text-xs text-slate-100 hover:bg-[#45454543] cursor-pointer select-none'>
 
                                     {
-                                        quality === stream.quality ?
+                                        selectedQuality === stream.quality ?
                                             <p className='text-[#3EA6FF] text-xs font-bold'>{stream.quality}</p>
                                             :
                                             <p>{stream.quality}</p>
