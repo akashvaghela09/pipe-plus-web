@@ -12,11 +12,17 @@ export const pipePlus = {
             let resourceList = [];
 
             let {
+                audioStreams,
+                category,
+                chapters,
                 description,
                 dislikes,
+                duration,
                 likes,
-                audioStreams,
+                livestream,
+                previewFrames,
                 relatedStreams,
+                subtitles,
                 thumbnailUrl,
                 title,
                 uploadDate,
@@ -49,11 +55,18 @@ export const pipePlus = {
             });
 
             data = {
+                videoStreams: [...resourceList],
+                audioStreams,
+                category,
+                chapters,
                 description,
                 dislikes,
+                duration,
                 likes,
-                audioStreams,
+                livestream,
+                previewFrames,
                 relatedStreams,
+                subtitles,
                 thumbnailUrl,
                 title,
                 uploadDate,
@@ -61,7 +74,6 @@ export const pipePlus = {
                 uploaderAvatar,
                 uploaderSubscriberCount,
                 uploaderUrl,
-                videoStreams: [...resourceList],
                 views
             };
 
