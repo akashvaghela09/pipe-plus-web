@@ -1,88 +1,111 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controls, ProgressBar } from "../";
 import { useDispatch, useSelector } from 'react-redux';
-import { setPlayStatus, setPlayer, setStreamValues } from '../../redux/player/actions';
+import { setPlayStatus, setAudioPlayer, setVideoPlayer, setStreamValues, setQualityUpdateStatus, setStreamPlayed } from '../../redux/player/actions';
+import ReactPlayer from 'react-player'
 
 export const Player = () => {
     const dispatch = useDispatch();
 
-    const playerRef = useRef(null);
+    const videoRef = useRef(null);
+    const audioRef = useRef(null);
+
     const {
-        player,
+        videoPlayer,
+        audioPlayer,
+        playbackRate,
         isPlaying,
         isFullScreen,
         volume,
         streamValues,
-        sourceUrl,
-        streamMetadata: { thumbnailUrl, playableStreams },
-        quality
+        streamSource,
+        streamMetadata: { thumbnailUrl, playableStreams, duration },
+        selectedQuality,
+        qualityUpdateStatus,
+        streamPlayed
     } = useSelector(state => state.player);
 
     const [isReady, setIsReady] = useState(true);
+    const [streamUrl, setStreamUrl] = useState(streamSource.url);
+    const [trackUrl, setTrackUrl] = useState(streamSource.track);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
 
     const handlePlayback = () => {
         dispatch(setPlayStatus(!isPlaying));
-
-        // If the video is being played for the first time, 
-        // add the 'timeupdate' event listener to the video element
-        if (streamValues.played === 0 && streamValues.buffered === 0) {
-            player.addEventListener('timeupdate', processStreamValues);
-        }
-
-        if (player) {
-            if (isPlaying) {
-                player.pause();
-            } else {
-                player.play();
-            }
-        }
+        setIsAudioPlaying(!isAudioPlaying);
     }
 
-    const processStreamValues = () => {
-        if (player) {
-            const playedFraction = player.currentTime / player.duration;
-            const loadedFraction = player.buffered.length ? player.buffered.end(0) / player.duration : 0;
-            const playedPercentage = Number(playedFraction * 100).toFixed(2);
-            const loadedPercentage = Number(loadedFraction * 100).toFixed(2);
-
-            dispatch(setStreamValues({
-                ...streamValues,
-                played: playedPercentage,
-                buffered: loadedPercentage,
-                seek: playedPercentage
-            }));
+    const processVideoStreamValues = (e) => {
+        if (isReady === true) {
+            dispatch(setStreamValues({ ...streamValues, ...e, seek: e.playedSeconds }));
 
             // If the video has played to the end, pause it
-            if (+playedPercentage === 100) {
+            if (+e.played === 100) {
                 dispatch(setPlayStatus(false));
             }
         }
     };
 
+    const handleReadyToPlay = () => {
+        let timeString = new Date().toLocaleTimeString();
+        console.log("Ready to play ...", timeString);
+        console.log("Previous Played seconds ...", streamPlayed);
+    }
+
+    const handleBuffering = () => {
+        console.log("Buffering ...", new Date().toLocaleTimeString());
+        setPlayStatus(false);
+        setIsAudioPlaying(false);
+    }
+
+    const handleBufferingEnd = () => {
+        console.log("Buffering ended ...", new Date().toLocaleTimeString());
+
+        if(qualityUpdateStatus === true) {
+            let seconds = streamPlayed;
+            console.log("Quality update status is true ...", streamPlayed);
+            dispatch(setPlayStatus(true));
+            videoPlayer.seekTo(seconds, 'seconds');
+            audioPlayer.seekTo(seconds, 'seconds');
+            dispatch(setQualityUpdateStatus(false));
+
+        } else {
+            console.log("Quality update status is false ...", new Date().toLocaleTimeString());   
+            dispatch(setPlayStatus(true));
+            setIsAudioPlaying(true);
+        }
+    }
+
     const storePlayerRef = () => {
-        if (playerRef.current) {
-            const newPlayer = playerRef.current;
-            dispatch(setPlayer(newPlayer));
+        if (videoRef.current) {
+            const newPlayer = videoRef.current;
+            dispatch(setVideoPlayer(newPlayer));
 
             // Set default volume
             newPlayer.volume = 1;
         } else {
-            console.log("playerRef.current is null");
+            console.log("videoRef.current is null");
+        }
+
+        if (audioRef.current) {
+            const newAudio = audioRef.current;
+            dispatch(setAudioPlayer(newAudio));
+
+            // Set default volume
+            newAudio.volume = 1;
         }
     }
 
     useEffect(() => {
-        console.log("Player Mounted ....")
+        console.log("Player Mounted ....", new Date().toLocaleTimeString())
         // Set the player reference
         storePlayerRef();
-
-        // Remove the event listener when the component is unmounted
-        return () => {
-            if (playerRef.current) {
-                playerRef.current.removeEventListener('timeupdate', processStreamValues);
-            }
-        };
     }, []);
+
+    useEffect(() => {
+        setStreamUrl(streamSource.url);
+        setTrackUrl(streamSource.track);
+    }, [streamSource, selectedQuality]);
 
     const smPortrait = "relative aspect-video";
     const smLandscape = "landscape:absolute landscape:top-1/2 landscape:left-1/2 landscape:transform landscape:-translate-x-1/2 landscape:-translate-y-1/2 landscape:h-full landscape:w-fit";
@@ -92,17 +115,38 @@ export const Player = () => {
 
     return (
         <div className={`bg-black transition-all  ${smPortrait} ${smLandscape} ${mdPortrait} ${isFullScreen ? mdLandscapeFullScreen : mdLandscape}`}>
+            {/* <video src={streamUrl} controls width={"450px"}/> */}
             {
                 isReady ?
                     <div className='w-full'>
-                        <video
-                            src={sourceUrl}
-                            ref={playerRef}
-                            className='w-full h-full object-cover'
+                        {/* Play Audio Stream */}
+                        <ReactPlayer
+                            ref={audioRef}
+                            url={trackUrl}
                             volume={volume}
+                            playbackRate={playbackRate}
+                            playing={isAudioPlaying}
+                            width={0}
+                            height={0}
+                        />
+                        {/* Play Video Stream */}
+                        <ReactPlayer
+                            ref={videoRef}
+                            url={streamUrl}
+                            volume={volume}
+                            playbackRate={playbackRate}
+                            playing={isPlaying}
+                            width={isFullScreen ? "100%" : "inherit"}
+                            height={isFullScreen ? "100%" : "inherit"}
+                            className='w-full h-full object-cover'
+                            onBuffer={handleBuffering}
+                            onBufferEnd={handleBufferingEnd}
+                            onReady={handleReadyToPlay}
+                            onProgress={processVideoStreamValues}
                         />
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
-                        <ProgressBar processStreamValues={processStreamValues} />
+                        
+                        <ProgressBar />
                         <Controls handlePlayback={handlePlayback} />
                     </div>
                     :
