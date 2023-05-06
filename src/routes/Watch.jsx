@@ -11,7 +11,7 @@ export const Watch = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const videoId = searchParams.get('v')
 
-    const { streamMetadata, quality } = useSelector(state => state.player);
+    const { streamMetadata, selectedQuality } = useSelector(state => state.player);
     const { title, thumbnailUrl, description } = streamMetadata;
 
     const handleVideoId = async () => {
@@ -33,15 +33,15 @@ export const Watch = () => {
         }
 
         let availableQuality = Object.keys(listOfStreams);
-        let sourceUrl = "";
+        let streamSource = {};
 
-        if(quality) {
-            sourceUrl = listOfStreams[quality][0].url;
+        if(selectedQuality) {
+            streamSource = listOfStreams[selectedQuality][0];
         } else {
-            sourceUrl = listOfStreams[availableQuality[0]].url;
+            streamSource = listOfStreams[availableQuality[0]][0];
         }
 
-        console.log("Target Url : ", sourceUrl);
+        console.log("Target Urls : ", streamSource);
 
         let qualityList = []
 
@@ -59,7 +59,7 @@ export const Watch = () => {
         // console.log("listOfStreams: ", listOfStreams);
 
 
-        dispatch(setStreamSource(sourceUrl));
+        dispatch(setStreamSource(streamSource));
         dispatch(setAvailableQualities(qualityList));
         dispatch(setStreamMetadata({...res, playableStreams: listOfStreams}));
     }

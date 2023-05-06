@@ -1,5 +1,6 @@
 import { 
-    SET_PLAYER,
+    SET_AUDIO_PLAYER,
+    SET_VIDE_PLAYER,
     SET_PLAY_STATUS,
     SET_FULL_SCREEN_STATUS,
     SET_PLAYBACK_RATE,
@@ -8,12 +9,21 @@ import {
     SET_STREAM_METADATA,
     SET_STREAM_QUALITY,
     SET_AVAILABLE_QUALITIES,
-    SET_STREAM_SOURCE
+    SET_STREAM_SOURCE,
+    SET_QUALITY_UPDATE_STATUS,
+    SET_STREAM_PLAYED
 } from './actionTypes';
 
-export const setPlayer = (payload) => {
+export const setAudioPlayer = (payload) => {
     return {
-        type: SET_PLAYER,
+        type: SET_AUDIO_PLAYER,
+        payload
+    }
+}
+
+export const setVideoPlayer = (payload) => {
+    return {
+        type: SET_VIDE_PLAYER,
         payload
     }
 }
@@ -77,6 +87,20 @@ export const setAvailableQualities = (payload) => {
 export const setStreamSource = (payload) => {
     return {
         type: SET_STREAM_SOURCE,
+        payload
+    }
+}
+
+export const setQualityUpdateStatus = (payload) => {
+    return {
+        type: SET_QUALITY_UPDATE_STATUS,
+        payload
+    }
+}
+
+export const setStreamPlayed = (payload) => {
+    return {
+        type: SET_STREAM_PLAYED,
         payload
     }
 }

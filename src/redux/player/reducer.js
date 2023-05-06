@@ -1,5 +1,6 @@
 import {
-    SET_PLAYER,
+    SET_AUDIO_PLAYER,
+    SET_VIDE_PLAYER,
     SET_PLAY_STATUS,
     SET_FULL_SCREEN_STATUS,
     SET_PLAYBACK_RATE,
@@ -8,20 +9,25 @@ import {
     SET_STREAM_METADATA,
     SET_STREAM_QUALITY,
     SET_AVAILABLE_QUALITIES,
-    SET_STREAM_SOURCE
+    SET_STREAM_SOURCE,
+    SET_QUALITY_UPDATE_STATUS,
+    SET_STREAM_PLAYED,
 } from './actionTypes';
 
 const initialState = {
-    player: null,
+    audioPlayer: null,
+    videoPlayer: null,
     isPlaying: false,
     isFullScreen: false,
     playbackRate: 1,
-    volume: 0.5,
+    volume: 1,
     streamValues: {
-        duration: 0,
-        buffered: 0,
-        played: 0,
         seek: 0,
+        duration: 0,
+        loaded: 0,
+        loadedSeconds: 0,
+        played: 0,
+        playedSeconds: 0
     },
     streamMetadata: {
         audioStreams: [],
@@ -46,18 +52,26 @@ const initialState = {
         videoStreams: [],
         views: 0
     },
-    quality: "360p",
+    selectedQuality: "360p",
     availableQualities: [],
-    sourceUrl: ""
+    streamSource: {},
+    trackUrl: "",
+    qualityUpdateStatus: false,
+    streamPlayed: 0
 }
 
 const reducer = (state = initialState, { type, payload }) => {
 
     switch (type) {
-        case SET_PLAYER:
+        case SET_AUDIO_PLAYER:
             return {
                 ...state,
-                player: payload
+                audioPlayer: payload
+            }
+        case SET_VIDE_PLAYER:
+            return {
+                ...state,
+                videoPlayer: payload
             }
         case SET_PLAY_STATUS:
             return {
@@ -85,7 +99,6 @@ const reducer = (state = initialState, { type, payload }) => {
                 streamValues: payload
             }
         case SET_STREAM_METADATA:
-            // console.log("payload: ", payload)        
             return {
                 ...state,
                 streamMetadata: payload
@@ -93,7 +106,7 @@ const reducer = (state = initialState, { type, payload }) => {
         case SET_STREAM_QUALITY:
             return {
                 ...state,
-                quality: payload
+                selectedQuality: payload
             }
         case SET_AVAILABLE_QUALITIES:
             return {
@@ -103,7 +116,17 @@ const reducer = (state = initialState, { type, payload }) => {
         case SET_STREAM_SOURCE:
             return {
                 ...state,
-                sourceUrl: payload
+                streamSource: payload
+            }
+        case SET_QUALITY_UPDATE_STATUS:
+            return {
+                ...state,
+                qualityUpdateStatus: payload
+            }
+        case SET_STREAM_PLAYED:
+            return {
+                ...state,
+                streamPlayed: payload
             }
         default:
             return state
