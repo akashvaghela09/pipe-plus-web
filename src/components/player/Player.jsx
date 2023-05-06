@@ -2,22 +2,20 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Controls, ProgressBar } from "../";
 import { useDispatch, useSelector } from 'react-redux';
 import { setPlayStatus, setPlayer, setStreamValues } from '../../redux/player/actions';
-import data from './../../data.json';
 
 export const Player = () => {
     const dispatch = useDispatch();
 
-    const { videoStreams, thumbnailUrl } = data;
-    let url360p = videoStreams['360p'].url;
-    let url720p = videoStreams['720p'].url;
-    const [videoUrl, setVideoUrl] = useState(url720p);
     const playerRef = useRef(null);
     const {
         player,
-        isPlaying, 
+        isPlaying,
         isFullScreen,
         volume,
-        streamValues
+        streamValues,
+        sourceUrl,
+        streamMetadata: { thumbnailUrl, playableStreams },
+        quality
     } = useSelector(state => state.player);
 
     const [isReady, setIsReady] = useState(true);
@@ -27,7 +25,7 @@ export const Player = () => {
 
         // If the video is being played for the first time, 
         // add the 'timeupdate' event listener to the video element
-        if(streamValues.played === 0 && streamValues.buffered === 0) {
+        if (streamValues.played === 0 && streamValues.buffered === 0) {
             player.addEventListener('timeupdate', processStreamValues);
         }
 
@@ -39,16 +37,6 @@ export const Player = () => {
             }
         }
     }
-
-    const handleQualityChange = (event) => {
-        const selectedQuality = event.target.value;
-        setVideoUrl(selectedQuality);
-
-        if (player) {
-            player.load();
-            player.play();
-        }
-    };
 
     const processStreamValues = () => {
         if (player) {
@@ -84,9 +72,10 @@ export const Player = () => {
     }
 
     useEffect(() => {
+        console.log("Player Mounted ....")
         // Set the player reference
         storePlayerRef();
-      
+
         // Remove the event listener when the component is unmounted
         return () => {
             if (playerRef.current) {
@@ -98,7 +87,7 @@ export const Player = () => {
     const smPortrait = "relative aspect-video";
     const smLandscape = "landscape:absolute landscape:top-1/2 landscape:left-1/2 landscape:transform landscape:-translate-x-1/2 landscape:-translate-y-1/2 landscape:h-full landscape:w-fit";
     const mdPortrait = "";
-    const mdLandscape = "md:landscape:relative md:landscape:top-0 md:landscape:left-0 md:landscape:transform-none md:landscape:translate-x-0 md:landscape:translate-y-0 md:landscape:max-w-[60%] md:landscape:h-fit md:min-w-[60%]";
+    const mdLandscape = "md:landscape:relative md:landscape:top-0 md:landscape:left-0 md:landscape:transform-none md:landscape:translate-x-0 md:landscape:translate-y-0 md:landscape:w-full md:landscape:h-fit md:min-w-[60%]";
     const mdLandscapeFullScreen = "";
 
     return (
@@ -107,14 +96,13 @@ export const Player = () => {
                 isReady ?
                     <div className='w-full'>
                         <video
-                            src={videoUrl}
+                            src={sourceUrl}
                             ref={playerRef}
                             className='w-full h-full object-cover'
                             volume={volume}
                         />
-
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
-                        <ProgressBar processStreamValues={processStreamValues}/>
+                        <ProgressBar processStreamValues={processStreamValues} />
                         <Controls handlePlayback={handlePlayback} />
                     </div>
                     :
