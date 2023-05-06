@@ -5,6 +5,10 @@ import {
     SET_PLAYBACK_RATE,
     SET_VOLUME,
     SET_STREAM_VALUES,
+    SET_STREAM_METADATA,
+    SET_STREAM_QUALITY,
+    SET_AVAILABLE_QUALITIES,
+    SET_STREAM_SOURCE
 } from './actionTypes';
 
 export const setPlayer = (payload) => {
@@ -49,3 +53,30 @@ export const setStreamValues = (payload) => {
     }
 }
 
+export const setStreamMetadata = (payload) => {
+    return {
+        type: SET_STREAM_METADATA,
+        payload
+    }
+}
+
+export const setStreamQuality = (payload) => {
+    return {
+        type: SET_STREAM_QUALITY,
+        payload
+    }
+}
+
+export const setAvailableQualities = (payload) => {
+    return {
+        type: SET_AVAILABLE_QUALITIES,
+        payload
+    }
+}
+
+export const setStreamSource = (payload) => {
+    return {
+        type: SET_STREAM_SOURCE,
+        payload
+    }
+}

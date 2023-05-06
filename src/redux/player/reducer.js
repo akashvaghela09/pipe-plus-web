@@ -1,10 +1,14 @@
-import { 
+import {
     SET_PLAYER,
     SET_PLAY_STATUS,
     SET_FULL_SCREEN_STATUS,
     SET_PLAYBACK_RATE,
     SET_VOLUME,
     SET_STREAM_VALUES,
+    SET_STREAM_METADATA,
+    SET_STREAM_QUALITY,
+    SET_AVAILABLE_QUALITIES,
+    SET_STREAM_SOURCE
 } from './actionTypes';
 
 const initialState = {
@@ -18,10 +22,36 @@ const initialState = {
         buffered: 0,
         played: 0,
         seek: 0,
-    }
+    },
+    streamMetadata: {
+        audioStreams: [],
+        category: "",
+        chapters: [],
+        description: "",
+        dislikes: 0,
+        duration: 0,
+        likes: 0,
+        livestream: false,
+        previewFrames: [],
+        playableStreams: {},
+        relatedStreams: [],
+        subtitles: [],
+        thumbnailUrl: "",
+        title: "",
+        uploadDate: "",
+        uploader: "",
+        uploaderAvatar: "",
+        uploaderSubscriberCount: 0,
+        uploaderUrl: "",
+        videoStreams: [],
+        views: 0
+    },
+    quality: "360p",
+    availableQualities: [],
+    sourceUrl: ""
 }
 
-const reducer = (state = initialState, {type, payload}) => {
+const reducer = (state = initialState, { type, payload }) => {
 
     switch (type) {
         case SET_PLAYER:
@@ -54,9 +84,30 @@ const reducer = (state = initialState, {type, payload}) => {
                 ...state,
                 streamValues: payload
             }
+        case SET_STREAM_METADATA:
+            // console.log("payload: ", payload)        
+            return {
+                ...state,
+                streamMetadata: payload
+            }
+        case SET_STREAM_QUALITY:
+            return {
+                ...state,
+                quality: payload
+            }
+        case SET_AVAILABLE_QUALITIES:
+            return {
+                ...state,
+                availableQualities: [...payload]
+            }
+        case SET_STREAM_SOURCE:
+            return {
+                ...state,
+                sourceUrl: payload
+            }
         default:
             return state
     }
 }
 
-export {reducer}
+export { reducer }
