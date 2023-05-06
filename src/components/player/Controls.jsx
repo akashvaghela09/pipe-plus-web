@@ -5,15 +5,17 @@ import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 
 import { useSelector, useDispatch } from 'react-redux';
 import { IconWrapper, PlayerFullScreen, PlayerSettings } from '../';
 import { setPlayerVolume } from '../../redux/player/actions';
+import { formatTime } from '../../utils';
 
 export const Controls = ({ handlePlayback }) => {
     const dispatch = useDispatch();
-    const { isPlaying, player, volume } = useSelector(state => state.player);
+    const { isPlaying, videoPlayer, volume, streamValues, streamMetadata: { duration } } = useSelector(state => state.player);
     const [volumeBarVisible, setVolumeBarVisible] = useState(false);
 
     const handleVolumeChange = (e) => {
-        let newVolume = e.target.value;
-        player.volume = newVolume;
+        let newVolume = Number(e.target.value);
+        videoPlayer.volume = newVolume;
+
         dispatch(setPlayerVolume(newVolume));
     }
 
@@ -79,8 +81,8 @@ export const Controls = ({ handlePlayback }) => {
                         <div className='ml-2' />
                     }
                 </div>
-                <p className='text-gray-400 text-xs whitespace-nowrap'>
-                    00:00 / 00:00
+                <p className='text-slate-50 text-opacity-80 text-xs whitespace-nowrap'>
+                    {formatTime(streamValues.playedSeconds)} / {formatTime(duration)}
                 </p>
             </div>
             <div className='flex gap-3 p-3 items-center'>
