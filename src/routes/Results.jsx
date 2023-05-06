@@ -3,6 +3,8 @@ import { ButtonWrapper } from '../components/theme/ButtonWrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterType } from '../redux/searchbar/actions';
 import { ChannelCard, PlaylistCard, ResultCard } from '../components';
+import { Link } from 'react-router-dom';
+
 export const Results = () => {
 
     const dispatch = useDispatch();
@@ -13,13 +15,9 @@ export const Results = () => {
     }
 
     useEffect(() => {
-        console.log(searchResults);
-
         return () => {
-            console.log("cleaned up");
             dispatch(setFilterType("all"));
         }
-
     }, [filterType, searchResults]);
 
     return (
@@ -39,12 +37,18 @@ export const Results = () => {
                 <div className='flex flex-col gap-4 w-fit'>
                     {
                         searchResults.length > 0 && searchResults.map((item, index) => {
-                            if(item.type === "stream"){
-                                return <ResultCard key={index} video={item} />
-                            } else if (item.type === "channel"){
-                                return <ChannelCard key={index} video={item} />
-                            } else if (item.type === "playlist"){
-                                return <PlaylistCard key={index} video={item} />  
+                            if (item.type === "stream") {
+                                return <Link to={item.url}>
+                                    <ResultCard key={index} video={item} />
+                                </Link>
+                            } else if (item.type === "channel") {
+                                return <Link to={item.url}>
+                                    <ChannelCard key={index} video={item} />
+                                </Link>
+                            } else if (item.type === "playlist") {
+                                return <Link to={item.url}>
+                                    <PlaylistCard key={index} video={item} />
+                                </Link>
                             }
                         })
                     }

@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { pipePlus } from "../apis"
-import { VideoCard } from "../components"
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { pipePlus } from "../apis";
+import { VideoCard } from "../components";
+import { Link } from "react-router-dom";
+
 export const Home = () => {
     const dispatch = useDispatch()
     const [trendingStreams, setTrendingStreams] = useState([]);
@@ -24,7 +26,9 @@ export const Home = () => {
         <div className="h-full flex flex-wrap justify-start gap-4">
             {
                 trendingStreams.length > 0 && trendingStreams.map((item) => {
-                    return <VideoCard key={item.title} video={item} />
+                    return <Link to={item.url}>
+                    <VideoCard key={item.title} video={item} />
+                    </Link>
                 })
 
             }
