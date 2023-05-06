@@ -7,12 +7,15 @@ import { GoHistory } from 'react-icons/go';
 import { BiSolidDownload, BiLike } from 'react-icons/bi';
 import { MenuWrapper } from '../';
 import { useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSidePanelValue } from '../../redux/app/actions';
 
 export const Sidepanel = () => {
     const location = useLocation();
+    const dispatch = useDispatch();
     const currentPath = location.pathname;
 
-    const [sidepanelVisible, setSidepanelVisible] = useState(true);
+    const { sidepanelOpen } = useSelector((state) => state.app);
 
     let primaryOptions = [
         {
@@ -93,16 +96,18 @@ export const Sidepanel = () => {
         }
     ]
 
+    let allowedRoutes = ["/", "/results"]
+
     useEffect(() => {
-        if (currentPath !== '/') {
-            // setSidepanelVisible(false);
+        if (allowedRoutes.includes(currentPath)) {
+            dispatch(setSidePanelValue(true));
         } else {
-            setSidepanelVisible(true);
+            dispatch(setSidePanelValue(false));
         }
     }, [currentPath]);
 
     return (
-        <div className='w-[270px] flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelVisible === true ? "270px" : "0px" }}>
+        <div className='w-[270px] flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelOpen === true ? "270px" : "0px" }}>
             {
                 primaryOptions.map((option, index) => {
                     return (
