@@ -1,46 +1,33 @@
-import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdSettings } from 'react-icons/io';
 import { PiCaretRightBold, PiCaretLeftBold } from 'react-icons/pi';
 import { RiEqualizerLine } from 'react-icons/ri';
 import { BsSpeedometer2 } from 'react-icons/bs';
 import { IconWrapper } from '../';
 import { useSelector, useDispatch } from 'react-redux';
-import { setPlaybackRate } from '../../redux/player/actions';
+import { setPlaybackRate, setStreamQuality, setStreamSource } from '../../redux/player/actions';
 
-export const PlayerSettings = forwardRef((props, ref) => {
+export const PlayerSettings = (props, ref) => {
     const dispatch = useDispatch();
 
-    const { player, playbackRate } = useSelector((state) => state.player);
+    const { player, playbackRate, quality, streamMetadata, availableQualities } = useSelector((state) => state.player);
+    const { playableStreams } = streamMetadata;
     const [showSettings, setShowSettings] = useState(false);
-    const settingsRef = useRef(null);
-    const iconRef = useRef(null);
     const [settingsType, setSettingsType] = useState('options'); // ['quality', 'speed']
     const playbackRateList = [0.25, 0.50, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
     // Function to handle click on the settings icon
     const handleSettingsClick = () => {
-        setShowSettings((prevShowSettings) => !prevShowSettings);
+        setShowSettings(!showSettings);
         setSettingsType('options');
     };
 
-    // Function to handle click outside the settings div
-    const handleClickOutside = (event) => {
-        if (
-            settingsRef.current &&
-            !settingsRef.current.contains(event.target) &&
-            iconRef.current &&
-            !iconRef.current.contains(event.target)
-        ) {
-            setShowSettings(false);
-        }
-    };
+    const handleSettingsOptionChange = (value) => {
+        console.log("Option change clicked ..");
+        setSettingsType(value);
+    }
 
-    // Function to handle click inside the settings div
-    const handleClickInside = (event) => {
-        event.stopPropagation();
-    };
-
-    const HandlePlaybackRateChange = (rate) => {
+    const handlePlaybackRateChange = (rate) => {
         player.playbackRate = rate;
 
         dispatch(setPlaybackRate(rate));
@@ -49,21 +36,14 @@ export const PlayerSettings = forwardRef((props, ref) => {
         setShowSettings(true);
     }
 
-    // Effect to add click event listener for handling clicks outside the settings div
-    useEffect(() => {
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
+    const handlePlaybackQualityChange = (value) => {
+        dispatch(setStreamQuality(value));
+        setSettingsType('options');
 
-    // Expose a method to close the settings div from parent components using ref
-    useImperativeHandle(ref, () => ({
-        closeSettings() {
-            setShowSettings(false);
-        },
-    }));
-
+        let newSrc = [...playableStreams[value]];
+        player.src = newSrc[0].url;
+        player.play().catch((err) => console.log("Failed again ..."))
+    }
 
     // Settings Options Components ******************************************************
 
@@ -82,7 +62,7 @@ export const PlayerSettings = forwardRef((props, ref) => {
 
     const QualitySettingsOption = () => {
         return (
-            <div onClick={() => setSettingsType("options")} className='flex justify-between hover:bg-[#45454543] cursor-pointer select-none'>
+            <div onClick={() => handleSettingsOptionChange("quality")} className='flex justify-between hover:bg-[#45454543] cursor-pointer select-none'>
                 <div className='flex items-center p-2'>
                     <IconWrapper>
                         <RiEqualizerLine />
@@ -90,7 +70,7 @@ export const PlayerSettings = forwardRef((props, ref) => {
                     <p className='text-xs text-slate-100'>Quality</p>
                 </div>
                 <div className='flex items-center p-2'>
-                    <p className='text-xs text-slate-100'>360p</p>
+                    <p className='text-xs text-slate-100'>{quality}</p>
                     <IconWrapper>
                         <PiCaretRightBold />
                     </IconWrapper>
@@ -120,39 +100,66 @@ export const PlayerSettings = forwardRef((props, ref) => {
 
     return (
         <div>
-            <div ref={iconRef} onClick={handleSettingsClick}>
+            <div onClick={() => handleSettingsClick()}>
                 <IconWrapper>
                     <IoMdSettings />
                 </IconWrapper>
             </div>
+
             {showSettings === true && settingsType === 'options' && (
-                <div onClick={handleClickInside} ref={settingsRef} className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
+                <div className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
                     <QualitySettingsOption />
                     <SpeedSettingsOption />
                 </div>
             )}
 
 
+            {showSettings === true && settingsType === 'quality' && (
+                <div className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
+                    <GoBack type='Quality' />
+                    <div className='border-t-[1px] border-[#454545]' />
+
+                    {
+                        availableQualities.map((stream) => {
+                            return (
+                                <div
+                                    key={stream.id}
+                                    onClick={() => handlePlaybackQualityChange(stream.quality)}
+                                    className='p-2 pl-10 text-xs text-slate-100 hover:bg-[#45454543] cursor-pointer select-none'>
+
+                                    {
+                                        quality === stream.quality ?
+                                            <p className='text-[#3EA6FF] text-xs font-bold'>{stream.quality}</p>
+                                            :
+                                            <p>{stream.quality}</p>
+                                    }
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            )}
+
             {showSettings === true && settingsType === 'speed' && (
-                <div onClick={handleClickInside} ref={settingsRef} className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
+                <div className='w-72 h-fit py-2 absolute bottom-[60px] right-2 bg-[#191919] rounded-xl'>
                     <GoBack type='Speed' />
                     <div className='border-t-[1px] border-[#454545]' />
 
                     {
                         playbackRateList.map((rate, index) => {
                             return (
-                                <p
+                                <div
                                     key={index}
-                                    onClick={() => HandlePlaybackRateChange(rate)}
+                                    onClick={() => handlePlaybackRateChange(rate)}
                                     className='p-2 pl-10 text-xs text-slate-100 hover:bg-[#45454543] cursor-pointer select-none'>
-                                    
+
                                     {
                                         playbackRate === rate ?
-                                                <p className='text-[#3EA6FF] text-xs font-bold'>{rate}</p>
-                                                :
-                                                <p>{rate}</p>
+                                            <p className='text-[#3EA6FF] text-xs font-bold'>{rate}</p>
+                                            :
+                                            <p>{rate}</p>
                                     }
-                                </p>
+                                </div>
                             )
                         })
                     }
@@ -160,4 +167,4 @@ export const PlayerSettings = forwardRef((props, ref) => {
             )}
         </div>
     );
-});
+};
