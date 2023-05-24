@@ -1,6 +1,6 @@
 import React from 'react'
 import { TiTick } from 'react-icons/ti';
-import { formatTime, countViews } from '../utils';
+import { formatTime, formatNumbers } from '../utils';
 
 export const VideoCard = ({ video }) => {
     const { 
@@ -38,7 +38,7 @@ export const VideoCard = ({ video }) => {
                         
                     </div>
                     <div className='flex items-start justify-start gap-2'>
-                        <p className='text-slate-100 opacity-50 text-sm'>{countViews(views)}</p>
+                        <p className='text-slate-100 opacity-50 text-sm'>{formatNumbers(views)} views</p>
                         {
                             uploadedDate && <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
                         }

@@ -1,3 +1,3 @@
 export { requestFullScreenEnter, requestFullScreenExit } from './fullscreen';
-export { countViews } from './countViews';
+export { formatNumbers } from './formatNumbers';
 export { formatTime } from './formatTime';

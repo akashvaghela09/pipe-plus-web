@@ -1,6 +1,6 @@
 import React from 'react'
 import { TiTick } from 'react-icons/ti';
-import { formatTime, countViews } from '../utils';
+import { formatTime, formatNumbers } from '../utils';
 import { LuListVideo } from 'react-icons/lu';
 
 export const PlaylistCard = ({ video }) => {
@@ -37,7 +37,6 @@ export const PlaylistCard = ({ video }) => {
                 <div className='flex flex-col grow'>
                     <p className='text-slate-50 line-clamp-2 leading-6'>{name}</p>
                     <div className='flex items-start justify-start gap-2'>
-                        {/* <p className='text-slate-100 opacity-50 text-sm'>{countViews(views)}</p> */}
                         {
                             uploadedDate && <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
                         }
