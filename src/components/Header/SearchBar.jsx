@@ -18,6 +18,7 @@ export const SearchBar = () => {
     // Function to handle click on the search icon
     const handleSearchIconClick = () => {
         dispatch(setInputFocus(true));
+        handleSearchSubmit();
     };
 
     const handleSearchQuery = async (query) => {
@@ -43,6 +44,11 @@ export const SearchBar = () => {
     const handleSearchCancel = () => {
         dispatch(setSearchQuery(""));
         dispatch(setSearchSuggestions([]));
+    }
+
+    const handleResultClick = (value) => {
+        dispatch(setSearchQuery(value));
+        handleSearchSubmit();
     }
 
     // Function to handle click outside the search bar
@@ -124,6 +130,7 @@ export const SearchBar = () => {
                             key={index}
                                 className='hover:bg-[#313131] flex justify-start items-center cursor-pointer'
                                 style={{backgroundColor: selectedResultIndex === index ? "#313131" : ""}}
+                                onClick={() => handleResultClick(result)}
                             >
                                 <BsSearch className='text-lg text-slate-100 mx-5 my-2' />
                                 <p className='text-slate-100'>{result}</p>
