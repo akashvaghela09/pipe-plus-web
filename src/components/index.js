@@ -6,8 +6,12 @@ export { PlayerFullScreen } from "./player/PlayerFullScreen.jsx";
 export { PlayerSettings } from "./player/PlayerSettings.jsx";
 
 // Theme components
-export { IconWrapper } from "./theme/IconWrapper.jsx"
-export { MenuWrapper } from "./theme/MenuWrapper.jsx"
+export { IconWrapper } from "./theme/IconWrapper.jsx";
+export { MenuWrapper } from "./theme/MenuWrapper.jsx";
+export { ButtonWrapper } from "./theme/ButtonWrapper.jsx";
+export { Spinner } from "./theme/Spinner.jsx";
+export { Button } from "./theme/Button.jsx";
+export { DescriptionCard } from "./DescriptionCard.jsx";
 
 // UI components
 export { Logo } from "./Header/Logo.jsx";
