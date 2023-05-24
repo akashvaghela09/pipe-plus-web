@@ -74,5 +74,8 @@
 
 .font_oswald {
   font-family: 'Oswald', sans-serif;
-  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font_roboto {
+  font-family: 'Roboto', sans-serif;
 }
