@@ -1,6 +1,6 @@
 import React from 'react'
 import { TiTick } from 'react-icons/ti';
-import { formatTime, countViews } from '../utils';
+import { formatTime, formatNumbers } from '../utils';
 
 export const ChannelCard = ({ video }) => {
     const {
@@ -32,7 +32,7 @@ export const ChannelCard = ({ video }) => {
                     <div className='flex items-start justify-start gap-2'>
                         <p className='text-slate-100 opacity-50 text-sm'>{name}</p>
                         <p className='text-slate-100 opacity-50 text-sm'>•</p>
-                        <p className='text-slate-100 opacity-50 text-sm'> {countViews(subscribers)}</p>
+                        <p className='text-slate-100 opacity-50 text-sm'> {formatNumbers(subscribers)} subscribers</p>
                     </div>
                         <p className='text-slate-100 opacity-50 text-sm mt-4'>{description}</p>
                 </div>

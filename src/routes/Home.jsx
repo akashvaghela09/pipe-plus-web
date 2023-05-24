@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 export const Home = () => {
     const dispatch = useDispatch()
+    const { sidepanelOpen } = useSelector((state) => state.app);
     const [trendingStreams, setTrendingStreams] = useState([]);
 
     const fetchTrendingStreams = async () => {
@@ -23,7 +24,7 @@ export const Home = () => {
     }, [])
 
     return (
-        <div className="h-full flex flex-wrap justify-start gap-4">
+        <div className="h-full flex flex-wrap justify-start gap-4 p-10" style={{marginLeft: sidepanelOpen ? "270px": "0px"}}>
             {
                 trendingStreams.length > 0 && trendingStreams.map((item) => {
                     return <Link to={item.url}>

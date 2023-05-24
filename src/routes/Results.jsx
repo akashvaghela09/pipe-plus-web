@@ -9,6 +9,7 @@ export const Results = () => {
 
     const dispatch = useDispatch();
     const { filterType, searchResults } = useSelector((state) => state.searchbar);
+    const { sidepanelOpen } = useSelector((state) => state.app);
 
     const handleFilterSelect = (type) => {
         dispatch(setFilterType(type));
@@ -22,7 +23,7 @@ export const Results = () => {
 
     return (
         <div className='flex flex-col'>
-            <div className='w-fit ml-64'>
+            <div className='w-fit'>
                 <div className='flex gap-2 items-center mb-4'>
                     <ButtonWrapper onClick={() => handleFilterSelect("all")} text='All' selected={filterType === "all" ? true : false} />
                     <ButtonWrapper onClick={() => handleFilterSelect("videos")} text='Videos' selected={filterType === "videos" ? true : false} />

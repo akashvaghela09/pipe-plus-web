@@ -4,7 +4,7 @@ import { Bookmark, Channel, ChannelGroups, Downloads, History, Home, Library, Li
 
 export const AllRoutes = () => {
     return (
-        <div className='w-full overflow-scroll' style={{maxHeight: "calc(100vh - 80px)"}}>
+        <div className='w-full flex justify-center'>
             <Routes>
                 {/* Primary Pages */}
                 <Route path='/' element={<Home />} />
