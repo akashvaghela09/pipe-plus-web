@@ -98,48 +98,58 @@ export const Sidepanel = () => {
 
     let allowedRoutes = ["/", "/results"]
 
+    const handleSidepanel = (value) => {
+        dispatch(setSidePanelValue(value));
+    }
+
     useEffect(() => {
         if (allowedRoutes.includes(currentPath)) {
-            dispatch(setSidePanelValue(true));
+            handleSidepanel(true);
         } else {
-            dispatch(setSidePanelValue(false));
+            handleSidepanel(false);
         }
     }, [currentPath]);
 
     return (
-        <div className='w-[270px] flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelOpen === true ? "270px" : "0px" }}>
+        <div className='fixed left-0 top-16 shadow-lg z-10 h-full flex' style={{width: (sidepanelOpen === true && allowedRoutes.includes(currentPath) === false) ? "100%" : "fit-content"}}>
+            <div className=' bg-[#191919] w-[270px] h-full flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelOpen === true ? "270px" : "0px" }}>
+                {
+                    primaryOptions.map((option, index) => {
+                        return (
+                            <MenuWrapper text={option.name} route={option.route} key={index}>
+                                {option.icon}
+                            </MenuWrapper>
+                        )
+                    })
+                }
+
+                <div className='border-t-[1px] border-t-[#272727] m-2' />
+
+                {
+                    secondaryOptions.map((option, index) => {
+                        return (
+                            <MenuWrapper text={option.name} route={option.route} key={index}>
+                                {option.icon}
+                            </MenuWrapper>
+                        )
+                    })
+                }
+
+                <div className='border-t-[1px] border-t-[#272727] m-2' />
+
+                {
+                    playlists.map((option, index) => {
+                        return (
+                            <MenuWrapper text={option.name} route={option.route} key={index}>
+                                {option.icon}
+                            </MenuWrapper>
+                        )
+                    })
+                }
+            </div>
             {
-                primaryOptions.map((option, index) => {
-                    return (
-                        <MenuWrapper text={option.name} route={option.route} key={index}>
-                            {option.icon}
-                        </MenuWrapper>
-                    )
-                })
-            }
-
-            <div className='border-t-[1px] border-t-[#272727] m-2' />
-
-            {
-                secondaryOptions.map((option, index) => {
-                    return (
-                        <MenuWrapper text={option.name} route={option.route} key={index}>
-                            {option.icon}
-                        </MenuWrapper>
-                    )
-                })
-            }
-
-            <div className='border-t-[1px] border-t-[#272727] m-2' />
-
-            {
-                playlists.map((option, index) => {
-                    return (
-                        <MenuWrapper text={option.name} route={option.route} key={index}>
-                            {option.icon}
-                        </MenuWrapper>
-                    )
-                })
+                allowedRoutes.includes(currentPath) === false && 
+            <div onClick={() => handleSidepanel(false)} className='bg-black bg-opacity-40 grow'/>
             }
         </div>
     )
