@@ -123,4 +123,43 @@ export const pipePlus = {
 
         return data;
     },
+
+    getComments: async (streamId) => {
+        let data = null;
+
+        try {
+            let res = await axios.get(`${config.baseUrl}/comments/${streamId}`);
+            data = res.data;
+        } catch (error) {
+            console.log("Failed while fetching comments", error);
+        }
+
+        return data;
+    },
+
+    getNextPageComments: async (streamId, nextpage) => {
+        let data = null;
+
+        try {
+            let res = await axios.get(`${config.baseUrl}/nextpage/comments/${streamId}?nextpage=${nextpage}`);
+            data = res.data;
+        } catch (error) {
+            console.log("Failed while fetching next page comments", error);
+        }
+
+        return data;
+    },
+
+    getCommentReplies: async (commentId) => {
+        let data = null;
+
+        try {
+            let res = await axios.get(`${config.baseUrl}/replies/${commentId}`);
+            data = res.data;
+        } catch (error) {
+            console.log("Failed while fetching comment replies", error);
+        }
+
+        return data;
+    },
 };
