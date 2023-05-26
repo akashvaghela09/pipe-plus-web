@@ -48,29 +48,29 @@ export const Player = () => {
 
     const handleReadyToPlay = () => {
         let timeString = new Date().toLocaleTimeString();
-        console.log("Ready to play ...", timeString);
-        console.log("Previous Played seconds ...", streamPlayed);
+        // console.log("Ready to play ...", timeString);
+        // console.log("Previous Played seconds ...", streamPlayed);
     }
 
     const handleBuffering = () => {
-        console.log("Buffering ...", new Date().toLocaleTimeString());
+        // console.log("Buffering ...", new Date().toLocaleTimeString());
         setPlayStatus(false);
         setIsAudioPlaying(false);
     }
 
     const handleBufferingEnd = () => {
-        console.log("Buffering ended ...", new Date().toLocaleTimeString());
+        // console.log("Buffering ended ...", new Date().toLocaleTimeString());
 
         if(qualityUpdateStatus === true) {
             let seconds = streamPlayed;
-            console.log("Quality update status is true ...", streamPlayed);
+            // console.log("Quality update status is true ...", streamPlayed);
             dispatch(setPlayStatus(true));
             videoPlayer.seekTo(seconds, 'seconds');
             audioPlayer.seekTo(seconds, 'seconds');
             dispatch(setQualityUpdateStatus(false));
 
         } else {
-            console.log("Quality update status is false ...", new Date().toLocaleTimeString());   
+            // console.log("Quality update status is false ...", new Date().toLocaleTimeString());   
             dispatch(setPlayStatus(true));
             setIsAudioPlaying(true);
         }
@@ -97,7 +97,7 @@ export const Player = () => {
     }
 
     useEffect(() => {
-        console.log("Player Mounted ....", new Date().toLocaleTimeString())
+        // console.log("Player Mounted ....", new Date().toLocaleTimeString())
         // Set the player reference
         storePlayerRef();
     }, []);
