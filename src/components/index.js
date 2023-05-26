@@ -18,7 +18,7 @@ export { Logo } from "./Header/Logo.jsx";
 export { Header } from "./Header/Header.jsx";
 export { SearchBar } from "./Header/SearchBar.jsx";
 export { Comment } from "./comment/Comment.jsx";
-export { CommentList } from "./comment/CommentList.jsx";
+export { CommentSection } from "./comment/CommentSection.jsx";
 export { Footer } from "./Footer.jsx";
 export { VideoCard } from "./VideoCard.jsx";
 export { ResultCard } from "./ResultCard.jsx";

@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { Button, ButtonWrapper, DescriptionCard, Player } from "../components";
+import { Button, ButtonWrapper, CommentSection, DescriptionCard, Player } from "../components";
 import { useEffect } from "react";
 import { pipePlus } from "../apis/pipePlus";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import { BiSolidDownload, BiLike, BiDislike } from 'react-icons/bi';
 export const Watch = () => {
     const dispatch = useDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
-    const videoId = searchParams.get('v')
+    const streamId = searchParams.get('v')
 
     const { streamMetadata, selectedQuality, streamSource } = useSelector(state => state.player);
     const { 
@@ -30,8 +30,8 @@ export const Watch = () => {
     } = streamMetadata;
 
     const handleVideoId = async () => {
-        let res = await pipePlus.getStreamData(videoId);
-        console.log("Got the data from pipeplus")
+        let res = await pipePlus.getStreamData(streamId);
+        // console.log("Got the data from pipeplus")
         const { videoStreams } = res;
 
         // prepare stream resources 
@@ -56,7 +56,7 @@ export const Watch = () => {
             streamSource = listOfStreams[availableQuality[0]][0];
         }
 
-        console.log("Target Urls : ", streamSource);
+        // console.log("Target Urls : ", streamSource);
 
         let qualityList = []
 
@@ -77,12 +77,15 @@ export const Watch = () => {
 
     useEffect(() => {
         handleVideoId()
-    }, [videoId])
+    }, [streamId])
 
     return (
         <div className="w-10/12 max-w-10/12 pt-6 flex justify-center">
             <div className="grow flex flex-col gap-4">
-                <Player videoId={videoId} />
+                {/* Player section */}
+                <Player />
+
+                {/* Stream Metadata section */}
                 <div className="flex flex-col gap-2">
                     <p className="text-slate-100 text-xl font-medium font-sans">{title}</p>
 
@@ -123,6 +126,8 @@ export const Watch = () => {
                             description={description}
                         />
                     </div>
+
+                    <CommentSection streamId={streamId}/>
                 </div>
             </div>
             <div className="w-[450px] min-w-[450px]">
