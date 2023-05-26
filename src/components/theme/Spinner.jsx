@@ -3,7 +3,8 @@ import { CgSpinner } from "react-icons/cg";
 export const Spinner = ({size = "lg"}) => {
 
     let sizeList = {
-        "sm": "text-[20px]",
+        "xs": "text-[20px]",
+        "sm": "text-[30px]",
         "md": "text-[50px]",
         "lg": "text-[100px]",
         "xl": "text-[150px]"
