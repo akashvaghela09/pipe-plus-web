@@ -112,7 +112,7 @@ export const Sidepanel = () => {
 
     return (
         <div className='fixed left-0 top-16 shadow-lg z-10 h-full flex' style={{width: (sidepanelOpen === true && allowedRoutes.includes(currentPath) === false) ? "100%" : "fit-content"}}>
-            <div className=' bg-[#191919] w-[270px] h-full flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelOpen === true ? "270px" : "0px" }}>
+            <div className=' bg-[#0f0f0f] w-[270px] h-full flex flex-col pt-2 overflow-hidden' style={{ width: sidepanelOpen === true ? "270px" : "0px" }}>
                 {
                     primaryOptions.map((option, index) => {
                         return (
