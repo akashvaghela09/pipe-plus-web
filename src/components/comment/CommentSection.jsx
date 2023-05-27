@@ -141,7 +141,7 @@ export const CommentSection = ({ streamId }) => {
                         return (
                             <div className='my-4' key={comment.id}>
                                 {/* Stream comment */}
-                                <Comment comment={comment} />
+                                <Comment comment={comment}/>
                                 {
                                     (comment.repliesPage !== null || comment.repliesPage === "Done") &&
                                     <div className='ml-14'>
@@ -162,7 +162,7 @@ export const CommentSection = ({ streamId }) => {
                                                 {
                                                     comment.replies.map((reply, index) => {
                                                         return (
-                                                            <Comment key={reply.id} comment={reply} />
+                                                            <Comment key={reply.id} comment={reply} iconSize="sm"/>
                                                         )
                                                     }
                                                     )
@@ -178,12 +178,12 @@ export const CommentSection = ({ streamId }) => {
                                                 }
 
                                                 {/* Loading while we get replies from server */}
-                                                    {
-                                                        comment.loading === true &&
-                                                <div className='p-4'>
+                                                {
+                                                    comment.loading === true &&
+                                                    <div className='p-4'>
                                                         <Spinner size="sm" />
-                                                </div>
-                                                    }
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>

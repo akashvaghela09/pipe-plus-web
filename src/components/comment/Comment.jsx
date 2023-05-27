@@ -4,7 +4,7 @@ import { TbPinned } from 'react-icons/tb';
 import { BiLike, BiDislike } from 'react-icons/bi';
 import { formatNumbers } from '../../utils';
 
-export const Comment = ({ comment }) => {
+export const Comment = ({ comment, iconSize = "lg" }) => {
     const {
         commentText,
         author,
@@ -19,7 +19,7 @@ export const Comment = ({ comment }) => {
 
     return (
         <div className='border-slate-700 flex'>
-            <img className='h-10 w-10 rounded-full' src={thumbnail} />
+            <img className={`${iconSize === "lg" ? "h-10 w-10" : "h-7 w-7"} rounded-full`} src={thumbnail} />
             <div className='px-4'>
                 {
                     pinned && <p className='text-slate-100 text-opacity-50 text-xs flex items-center'> <TbPinned className='text-lg' /> Pinned by <b className='mx-1'>{uploader}</b></p>
