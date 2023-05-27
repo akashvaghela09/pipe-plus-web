@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { Button, ButtonWrapper, CommentSection, DescriptionCard, Player } from "../components";
+import { Button, ButtonWrapper, CommentSection, DescriptionCard, Player, VideoCard, ResultCard } from "../components";
 import { useEffect } from "react";
 import { pipePlus } from "../apis/pipePlus";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { formatNumbers } from "../utils";
 import { TiTick } from 'react-icons/ti';
 import { BiSolidDownload, BiLike, BiDislike } from 'react-icons/bi';
+import { Link } from "react-router-dom";
 
 export const Watch = () => {
     const dispatch = useDispatch();
@@ -15,22 +16,23 @@ export const Watch = () => {
     const streamId = searchParams.get('v')
 
     const { streamMetadata, selectedQuality, streamSource } = useSelector(state => state.player);
-    const { 
-        title, 
-        thumbnailUrl, 
-        description, 
-        uploaderAvatar, 
-        uploader, 
-        uploaderSubscriberCount, 
+    const {
+        title,
+        thumbnailUrl,
+        description,
+        uploaderAvatar,
+        uploader,
+        uploaderSubscriberCount,
         likes,
         dislikes,
         views,
         uploadDate,
-        relatedStreams 
+        relatedStreams
     } = streamMetadata;
 
     const handleVideoId = async () => {
         let res = await pipePlus.getStreamData(streamId);
+        console.log(res.relatedStreams);
         // console.log("Got the data from pipeplus")
         const { videoStreams } = res;
 
@@ -127,11 +129,17 @@ export const Watch = () => {
                         />
                     </div>
 
-                    <CommentSection streamId={streamId}/>
+                    <CommentSection streamId={streamId} />
                 </div>
             </div>
-            <div className="w-[450px] min-w-[450px]">
-
+            <div className="w-[450px] min-w-[450px] h-fit pl-5 flex flex-col gap-4">
+                {
+                    relatedStreams.length > 0 && relatedStreams.map((item) => {
+                        return <Link to={item.url} key={uuid()}>
+                            <ResultCard video={item} size="sm"/>
+                        </Link>
+                    })
+                }
             </div>
         </div>
     )
