@@ -16,6 +16,7 @@ export const ChannelCard = ({ video }) => {
         <div className='w-full flex gap-4'>
             <div className='relative w-[380px] flex justify-center'>
                 <img
+                    loading='lazy'
                     src={thumbnail}
                     className='w-44 h-44 rounded-full z-10 cursor-pointer'
                 />

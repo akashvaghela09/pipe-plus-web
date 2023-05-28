@@ -93,7 +93,7 @@ export const Watch = () => {
 
                     <div className="flex justify-between items-center">
                         <div className="py-2 flex gap-3 justify-start items-center">
-                            <img src={uploaderAvatar} className="rounded-full" />
+                            <img loading="lazy" src={uploaderAvatar} className="rounded-full" />
                             <div className="flex flex-col justify-center">
                                 <div className="flex items-center gap-2">
                                     <p className="text-slate-200 text-sm">{uploader} </p>

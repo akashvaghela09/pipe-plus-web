@@ -151,6 +151,7 @@ export const Player = () => {
                     </div>
                     :
                     <img
+                        loading='lazy'
                         src={thumbnailUrl}
                         alt="Video thumbnail"
                         onClick={() => setIsReady(true)}

@@ -23,7 +23,7 @@ export const PlaylistCard = ({ video }) => {
         <div className='w-full flex gap-4'>
             <div className='relative w-[380px] rounded-xl cursor-pointer'>
                 <img
-                    // onClick={() => window.open(url, '_blank')}
+                    loading='lazy'
                     src={thumbnail}
                     className='w-full rounded-xl z-10 cursor-pointer'
                 />

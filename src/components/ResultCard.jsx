@@ -41,6 +41,7 @@ export const ResultCard = ({ video, size = "lg" }) => {
         <div className={`flex ${sectionGap[size]} `}>
             <div className={`relative ${thumbContainer[size]}`}>
                 <img
+                    loading='lazy'
                     src={thumbnail}
                     className={`rounded-lg ${thumb[size]} z-10 cursor-pointer`}
                 />
@@ -104,7 +105,7 @@ export const ResultCard = ({ video, size = "lg" }) => {
 
 
                             <div className='flex justify-start items-center gap-2 my-4'>
-                                <img src={uploaderAvatar} className='w-7 h-7 rounded-full' />
+                                <img loading='lazy' src={uploaderAvatar} className='w-7 h-7 rounded-full' />
                                 <div className='flex items-center justify-start gap-2'>
                                     <p className='text-slate-100 opacity-50 text-sm line-clamp-1 hover:opacity-70 cursor-pointer'>{uploaderName}</p>
                                     {
