@@ -3,7 +3,7 @@ import { Button, ButtonWrapper, CommentSection, DescriptionCard, Player, VideoCa
 import { useEffect } from "react";
 import { pipePlus } from "../apis/pipePlus";
 import { useDispatch, useSelector } from "react-redux";
-import { setAvailableQualities, setStreamMetadata, setStreamSource } from "../redux/player/actions";
+import { setAvailableQualities, setCommentData, setPlayStatus, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamValues } from "../redux/player/actions";
 import { v4 as uuid } from 'uuid';
 import { formatNumbers } from "../utils";
 import { TiTick } from 'react-icons/ti';
@@ -32,8 +32,6 @@ export const Watch = () => {
 
     const handleVideoId = async () => {
         let res = await pipePlus.getStreamData(streamId);
-        console.log(res.relatedStreams);
-        // console.log("Got the data from pipeplus")
         const { videoStreams } = res;
 
         // prepare stream resources 
@@ -51,16 +49,13 @@ export const Watch = () => {
 
         let availableQuality = Object.keys(listOfStreams);
         let streamSource = {};
+        let qualityList = []
 
         if (selectedQuality) {
             streamSource = listOfStreams[selectedQuality][0];
         } else {
             streamSource = listOfStreams[availableQuality[0]][0];
         }
-
-        // console.log("Target Urls : ", streamSource);
-
-        let qualityList = []
 
         for (let i = 0; i < availableQuality.length; i++) {
             let obj = {};
@@ -75,7 +70,54 @@ export const Watch = () => {
         dispatch(setStreamMetadata({ ...res, playableStreams: listOfStreams }));
     }
 
-    
+    const handleStreamChange = (stream) => {
+        dispatch(setStreamValues({
+            seek: 0,
+            duration: 0,
+            loaded: 0,
+            loadedSeconds: 0,
+            played: 0,
+            playedSeconds: 0
+        }))
+
+        dispatch(setStreamMetadata({
+            audioStreams: [],
+            category: "",
+            chapters: [],
+            description: "",
+            dislikes: 0,
+            duration: 0,
+            likes: 0,
+            livestream: false,
+            previewFrames: [],
+            playableStreams: {},
+            relatedStreams: [],
+            subtitles: [],
+            thumbnailUrl: "",
+            title: "",
+            uploadDate: "",
+            uploader: "",
+            uploaderAvatar: "",
+            uploaderSubscriberCount: 0,
+            uploaderUrl: "",
+            videoStreams: [],
+            views: 0
+        }))
+
+        dispatch(setAvailableQualities([]));
+
+        dispatch(setStreamSource({}));
+
+        dispatch(setStreamPlayed(0))
+
+        dispatch(setCommentData({
+            list: [],
+            count: 0,
+            replyIndex: -1,
+            isLoading: false,
+            nextPage: null,
+        }))
+    }
 
     useEffect(() => {
         handleVideoId()
@@ -135,7 +177,7 @@ export const Watch = () => {
             <div className="w-[450px] min-w-[450px] h-fit pl-5 flex flex-col gap-4">
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
-                        return <Link to={item.url} key={uuid()}>
+                        return <Link to={item.url} key={uuid()} onClick={() => handleStreamChange()}>
                             <ResultCard video={item} size="sm"/>
                         </Link>
                     })
