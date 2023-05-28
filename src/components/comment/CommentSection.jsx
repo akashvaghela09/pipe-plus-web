@@ -5,14 +5,16 @@ import { formatNumbers } from '../../utils';
 import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
 import { BsArrowReturnRight } from 'react-icons/bs';
 import { v4 as uuid } from 'uuid';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCommentData } from '../../redux/player/actions';
 
 export const CommentSection = ({ streamId }) => {
+    const dispatch = useDispatch();
+
+    const { commentData } = useSelector(state => state.player);
+    const { count, list, nextPage, replyIndex, isLoading } = commentData;
+
     const commentSectionRef = useRef(null);
-    const [commentCount, setCommentCount] = useState(0);
-    const [commentList, setCommentList] = useState([]);
-    const [nextPage, setNextPage] = useState(null);
-    const [isCommentsLoading, setIsCommentsLoading] = useState(false);
-    const [replyIndex, setReplyIndex] = useState(-1);
 
     const loadStreamComments = async () => {
         let data = await pipePlus.getComments(streamId);
@@ -25,17 +27,26 @@ export const CommentSection = ({ streamId }) => {
             comment.loading = false;
         });
 
-        setCommentCount(commentCount);
-        setCommentList([...comments]);
-        setNextPage(nextpage);
+        dispatch(setCommentData({
+            ...commentData,
+            count: commentCount,
+            list: [...comments],
+            nextPage: nextpage,
+        }))
     }
 
     const loadMoreComments = async () => {
-        setIsCommentsLoading(true);
+        dispatch(setCommentData({
+            ...commentData,
+            isLoading: true,
+            }));
 
         if (nextPage === null || nextPage === undefined || nextPage === '') {
             console.log("No more comments to load, reached the end");
-            setIsCommentsLoading(false);
+            dispatch(setCommentData({
+                ...commentData,
+                isLoading: false,
+                }));
             return;
         }
 
@@ -51,22 +62,28 @@ export const CommentSection = ({ streamId }) => {
                 comment.loading = false;
             });
 
-            setCommentList([...commentList, ...comments]);
-            setNextPage(nextpage);
-            setIsCommentsLoading(false);
+            dispatch(setCommentData({
+                ...commentData,
+                list: [...list, ...comments],
+                nextPage: nextpage,
+                isLoading: false,
+            }));
         } else {
             console.log("Failed to load more comments");
-            setIsCommentsLoading(false);
+            dispatch(setCommentData({
+                ...commentData,
+                isLoading: false,
+            }));
         }
     }
 
     const loadCommentReplies = async (index) => {
-        commentList[index].loading = true;
-        let repliesPage = commentList[index].repliesPage;
+        list[index].loading = true;
+        let repliesPage = list[index].repliesPage;
 
         if (repliesPage === null || repliesPage === undefined || repliesPage === '') {
             console.log("No replies to load, reached the end");
-            commentList[index].loading = false;
+            list[index].loading = false;
             return;
         }
 
@@ -79,32 +96,44 @@ export const CommentSection = ({ streamId }) => {
                 comment.id = uuid();
             });
 
-            commentList[index].replies = [...commentList[index].replies, ...comments];
-            commentList[index].repliesPage = nextpage ? nextpage : "Done";
-            commentList[index].loading = false;
+            list[index].replies = [...list[index].replies, ...comments];
+            list[index].repliesPage = nextpage ? nextpage : "Done";
+            list[index].loading = false;
 
-            setCommentList([...commentList]);
+            dispatch(setCommentData({
+                ...commentData,
+                list: [...list],
+            }));
         } else {
             console.log("Failed to load replies");
-            commentList[index].loading = false;
+            list[index].loading = false;
         }
     }
 
     const handleReplyOpen = async (index) => {
-        console.log("Reply open clicked", index);
-        commentList[index].loading = true;
-        setReplyIndex(index);
+        list[index].loading = true;
+        dispatch(setCommentData({
+            ...commentData,
+            list: [...list],
+            replyIndex: index,
+        }));
 
-        if (commentList[index].replyOpen === false) {
-            commentList[index].replyOpen = true;
+        if (list[index].replyOpen === false) {
+            list[index].replyOpen = true;
             await loadCommentReplies(index);
-
         } else {
-            commentList[index].replyOpen = false;
-            setReplyIndex(-1);
+            list[index].replyOpen = false;
+            dispatch(setCommentData({
+                ...commentData,
+                list: [...list],
+                replyIndex: -1,
+            }));
         }
 
-        setCommentList([...commentList]);
+        dispatch(setCommentData({
+            ...commentData,
+            list: [...list],
+        }));
     }
 
     useEffect(() => {
@@ -129,15 +158,15 @@ export const CommentSection = ({ streamId }) => {
         return () => {
             document.removeEventListener('scroll', handleScroll);
         };
-    }, [commentList, replyIndex]);
+    }, [list, replyIndex]);
 
     return (
         <div className='my-5 py-5'>
-            <h1 className='text-slate-100 '><b>{commentCount}</b> Comments</h1>
+            <h1 className='text-slate-100 '><b>{count}</b> Comments</h1>
 
             <div ref={commentSectionRef}>
                 {
-                    commentList.map((comment, index) => {
+                    list.map((comment, index) => {
                         return (
                             <div className='my-4' key={comment.id}>
                                 {/* Stream comment */}
@@ -195,7 +224,7 @@ export const CommentSection = ({ streamId }) => {
 
                 {/* Load while we get next page comments */}
                 {
-                    isCommentsLoading &&
+                    isLoading &&
                     <div className='flex justify-center py-4 h-28'>
                         <Spinner size="sm" />
                     </div>
