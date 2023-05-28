@@ -11,7 +11,8 @@ import {
     SET_AVAILABLE_QUALITIES,
     SET_STREAM_SOURCE,
     SET_QUALITY_UPDATE_STATUS,
-    SET_STREAM_PLAYED
+    SET_STREAM_PLAYED,
+    SET_COMMENT_DATA,
 } from './actionTypes';
 
 export const setAudioPlayer = (payload) => {
@@ -101,6 +102,13 @@ export const setQualityUpdateStatus = (payload) => {
 export const setStreamPlayed = (payload) => {
     return {
         type: SET_STREAM_PLAYED,
+        payload
+    }
+}
+
+export const setCommentData = (payload) => {
+    return {
+        type: SET_COMMENT_DATA,
         payload
     }
 }

@@ -12,6 +12,7 @@ import {
     SET_STREAM_SOURCE,
     SET_QUALITY_UPDATE_STATUS,
     SET_STREAM_PLAYED,
+    SET_COMMENT_DATA,
 } from './actionTypes';
 
 const initialState = {
@@ -55,9 +56,15 @@ const initialState = {
     selectedQuality: "360p",
     availableQualities: [],
     streamSource: {},
-    trackUrl: "",
     qualityUpdateStatus: false,
-    streamPlayed: 0
+    streamPlayed: 0,
+    commentData: {
+        list: [],
+        count: 0,
+        replyIndex: -1,
+        isLoading: false,
+        nextPage: null,
+    }
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -127,6 +134,11 @@ const reducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 streamPlayed: payload
+            }
+        case SET_COMMENT_DATA:
+            return {
+                ...state,
+                commentData: payload
             }
         default:
             return state
