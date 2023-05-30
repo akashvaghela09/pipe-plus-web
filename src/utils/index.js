@@ -1,3 +1,32 @@
-export { requestFullScreenEnter, requestFullScreenExit } from './fullscreen';
-export { formatNumbers } from './formatNumbers';
-export { formatTime } from './formatTime';
+// Supabase Auth utils
+export { 
+    getUser, 
+    getSession, 
+    signInUser, 
+    signOutUser 
+} from './auth';
+
+// Fullscreen utils
+export { 
+    requestFullScreenEnter, 
+    requestFullScreenExit 
+} from './fullscreen';
+
+// Number formatting utils
+export { 
+    formatNumbers, 
+    formatTime 
+} from './numbers';
+
+// Localstorage utils
+export { 
+    loadData, 
+    saveData, 
+    clearData 
+} from './localstorage';
+
+// Helper utils
+export { 
+    waitFor, 
+    isValid 
+} from './helper';
