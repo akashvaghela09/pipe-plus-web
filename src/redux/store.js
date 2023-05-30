@@ -2,8 +2,10 @@ import { combineReducers, createStore, applyMiddleware, compose } from 'redux'
 import { reducer as appReducer } from './app/reducer'
 import { reducer as playerReducer} from './player/reducer';
 import { reducer as searchbarReducer } from './searchbar/reducer';
+import { reducer as authReducer } from './auth/reducer';
 
 const rootReducer = combineReducers({
+    auth: authReducer,
     app: appReducer,
     player: playerReducer,
     searchbar: searchbarReducer
