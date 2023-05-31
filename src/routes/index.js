@@ -7,6 +7,7 @@ export { History } from "./History.jsx";
 export { Home } from "./Home.jsx";
 export { Library } from "./Library.jsx";
 export { LikedVideos } from "./LikedVideos.jsx";
+export { SignIn } from "./SignIn.jsx";
 export { PageNotFound } from "./PageNotFound.jsx";
 export { Playlist } from "./Playlist.jsx";
 export { Results } from "./Results.jsx";
