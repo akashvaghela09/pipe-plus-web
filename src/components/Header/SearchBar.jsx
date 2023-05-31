@@ -106,6 +106,7 @@ export const SearchBar = () => {
                 <input
                     type='text'
                     value={searchQuery}
+                    placeholder='Search'
                     onFocus={() => dispatch(setInputFocus(true))}
                     onChange={(e) => handleSearchQuery(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e)}
