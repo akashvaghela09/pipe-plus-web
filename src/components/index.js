@@ -25,3 +25,5 @@ export { ResultCard } from "./ResultCard.jsx";
 export { PlaylistCard } from "./PlaylistCard.jsx";
 export { ChannelCard } from "./ChannelCard.jsx";
 export { Sidepanel } from "./Sidepanel/Sidepanel.jsx";
+export { SignInButton } from "./Header/SignInButton.jsx";
+export { SignOutButton } from "./Header/SignOutButton.jsx";
