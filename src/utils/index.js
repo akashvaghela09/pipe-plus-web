@@ -3,7 +3,8 @@ export {
     getUser, 
     getSession, 
     signInUser, 
-    signOutUser 
+    signOutUser,
+    updateOnboardingStatus 
 } from './auth';
 
 // Fullscreen utils

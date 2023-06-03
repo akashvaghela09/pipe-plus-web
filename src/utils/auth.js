@@ -3,8 +3,7 @@ import { supabase } from "../configs/supabase-config";
 export const getUser = async () => {
     try {
         const { data: { user }, error } = await supabase.auth.getUser();
-        console.log("User:", user, "Error:", error);
-        return user;        
+        return user;
     } catch (error) {
         // Handle the error here
         console.error("Error occurred while fetching user:", error);
@@ -41,6 +40,23 @@ export const signOutUser = async () => {
         const data = await supabase.auth.signOut();
         return data;
     } catch (error) {
-        console.log("Error occurred while signing out user:", error);        
+        console.log("Error occurred while signing out user:", error);
+    }
+}
+
+export const updateOnboardingStatus = async (user_id, email) => {
+    try {
+        const { data } = await supabase.auth.updateUser({ data: { onboarded: true } })
+
+        // Add user in database
+        const { res } = await supabase
+            .from('pipe_users')
+            .insert([
+                { user_id, email, videos_watched: 0, channels_subscribed: 0, created_at: new Date(), region: "IN" },
+            ])
+
+        return { data, res };
+    } catch (error) {
+        console.log("Error occurred while updating onboarding status:", error);
     }
 }
