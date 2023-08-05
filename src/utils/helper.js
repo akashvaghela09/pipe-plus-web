@@ -8,3 +8,11 @@ export const isValid = (value) => {
     }
     return true;
 }
+
+export const removeDuplicates = (array) => {
+    return Array.from(new Set(array));
+}
+
+export const removeItem = (array, strToRemove) => {
+    return array.filter(item => item !== strToRemove);
+}
