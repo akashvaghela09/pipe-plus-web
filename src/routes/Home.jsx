@@ -13,7 +13,7 @@ export const Home = () => {
 
     const fetchTrendingStreams = async () => {
         try {
-            let res = await pipePlus.getTrendingData("IN");
+            let res = await pipePlus.feed.trending("IN");
             res.forEach((item) => {
                 item.id = uuid();
             });

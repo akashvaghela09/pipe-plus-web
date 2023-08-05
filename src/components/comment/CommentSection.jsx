@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { pipePlus } from '../../apis/pipePlus';
 import { Comment, Spinner } from '../';
 import { formatNumbers } from '../../utils';
 import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
@@ -7,6 +6,7 @@ import { BsArrowReturnRight } from 'react-icons/bs';
 import { v4 as uuid } from 'uuid';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCommentData } from '../../redux/player/actions';
+import { pipePlus } from '../../apis';
 
 export const CommentSection = ({ streamId }) => {
     const dispatch = useDispatch();
@@ -17,7 +17,7 @@ export const CommentSection = ({ streamId }) => {
     const commentSectionRef = useRef(null);
 
     const loadStreamComments = async () => {
-        let data = await pipePlus.getComments(streamId);
+        let data = await pipePlus.stream.comments.get(streamId);
         const { commentCount, comments, nextpage } = data;
 
         comments.forEach(comment => {
@@ -50,7 +50,7 @@ export const CommentSection = ({ streamId }) => {
             return;
         }
 
-        let data = await pipePlus.getNextPageComments(streamId, nextPage);
+        let data = await pipePlus.stream.comments.getNextPage(streamId, nextPage);
 
         if (data !== null && data !== undefined && data !== '') {
             const { comments, nextpage } = data;
@@ -87,7 +87,7 @@ export const CommentSection = ({ streamId }) => {
             return;
         }
 
-        let data = await pipePlus.getNextPageComments(streamId, repliesPage);
+        let data = await pipePlus.stream.comments.getNextPage(streamId, repliesPage);
 
         if (data !== null && data !== undefined && data !== '') {
             const { comments, nextpage } = data;

@@ -1,27 +1,34 @@
 import { useSearchParams } from "react-router-dom";
-import { Button, ButtonWrapper, CommentSection, DescriptionCard, Player, VideoCard, ResultCard } from "../components";
+import { Button, CommentSection, DescriptionCard, Player, ResultCard } from "../components";
 import { useEffect } from "react";
-import { pipePlus } from "../apis/pipePlus";
+import { pipePlus } from "../apis";
 import { useDispatch, useSelector } from "react-redux";
 import { setAvailableQualities, setCommentData, setPlayStatus, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamValues } from "../redux/player/actions";
 import { v4 as uuid } from 'uuid';
-import { formatNumbers } from "../utils";
+import { formatNumbers, getUser } from "../utils";
 import { TiTick } from 'react-icons/ti';
 import { BiSolidDownload, BiLike, BiDislike } from 'react-icons/bi';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../configs/supabase-config";
 
 export const Watch = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const streamId = searchParams.get('v')
 
+    const { authStatus } = useSelector(state => state.auth);
     const { streamMetadata, selectedQuality, streamSource } = useSelector(state => state.player);
+    const { user } = useSelector(state => state.auth);
     const {
         title,
         thumbnailUrl,
+        category,
         description,
+        duration,
         uploaderAvatar,
         uploader,
+        uploaderUrl,
         uploaderSubscriberCount,
         likes,
         dislikes,
@@ -31,7 +38,7 @@ export const Watch = () => {
     } = streamMetadata;
 
     const handleVideoId = async () => {
-        let res = await pipePlus.getStreamData(streamId);
+        let res = await pipePlus.stream.get(streamId);
         const { videoStreams } = res;
 
         // prepare stream resources 
@@ -119,8 +126,135 @@ export const Watch = () => {
         }))
     }
 
+    const handleChannelSubscribe = async () => {
+        validate();
+
+        let uploader_id = uploaderUrl.split("/").pop();
+        let data = {
+            created_at: new Date(),
+            uuid: uuid(),
+            uploader_id: uploader_id,
+            name: uploader,
+            avatar: uploaderAvatar,
+            feed_allowed: true,
+            user_id: user.id
+        }
+
+        let res = await pipePlus.channel.subscribe(data);
+        console.log("Subscription response : ", res);
+    }
+
+    const handleChannelUnSubscribe = async () => {
+        validate();
+
+        let uploader_id = uploaderUrl.split("/").pop();
+
+        let res = await pipePlus.channel.unsubscribe(user.id, uploader_id);
+        console.log("Subscription response : ", res);
+    }
+
+    const validate = async () => {
+        if (!authStatus) {
+            alert("Please login to subscribe to this channel")
+            navigate('/signin');
+        }
+    }
+
+    const handleTest = async (streamId, userId) => {
+        // let streamData = {
+        //     created_at: new Date(),
+        //     title: title,
+        //     views: views,
+        //     upload_date: uploadDate,
+        //     duration: duration,
+        //     thumbnail: thumbnailUrl,
+        //     uploader: uploader,
+        //     uploader_avatar: uploaderAvatar,
+        //     uuid: uuid(),
+        //     user_id: userId,
+        //     watched: false,
+        //     watch_later: false,
+        //     liked: false,
+        //     category: category,
+        //     progress: 0,
+        //     stream_id: streamId
+        // };
+
+        // let res = await pipePlus.addNewStreamPlayed({streamData});
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        // let params = {
+        //     streamUuid: "a1652cc3-1c59-4717-92ad-84ce052d4d93",
+        //     progressAmount: 10
+        // }
+        // let res = await pipePlus.updateStreamPlayed(params);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // let uuid = "a1652cc3-1c59-4717-92ad-84ce052d4d93"
+        // let res = await pipePlus.removeStreamFromHistory(uuid);
+
+        // console.log("Response : ", res);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //   let uuid = "a1652cc3-1c59-4717-92ad-84ce052d4d93"
+        //   let res = await pipePlus.removeStreamFromHistory(uuid);
+
+        //   console.log("Response : ", res);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // let params = {
+        //     streamUuid: "a1652cc3-1c59-4717-92ad-84ce052d4d93",
+        //     progressAmount: 10
+        // }
+        // let res = await pipePlus.watchLaterRemove(params);
+
+        // console.log("Response : ", res);
+
+        // ///////////////////////////////////////////////////////////////////////////////////////
+        // let params = {
+        //     user_id: user.id,
+        //     created_at: new Date(),
+        //     uuid: uuid(),
+        //     name: "Test",
+        //     url_list: ["url--id--1", "url--id--2", "url--id--3", "url--id--4", "url--id--5"],
+        //     modified_at: new Date(),
+        // };
+
+        // let res = await pipePlus.createChannelGroup(params);
+        // console.log("Response : ", res);
+
+        // ///////////////////////////////////////////////////////////////////////////////////////
+        // let params = {
+        //     uuid: "68128137-ef17-447b-bf0c-8cc762146b45",
+        //     name: "Test Updated",
+        // };
+
+        // let res = await pipePlus.renameChannelGroup(params);
+        // console.log("Response : ", res);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // let params = {
+        //     uuid: "68128137-ef17-447b-bf0c-8cc762146b45",
+        // };
+
+        // let res = await pipePlus.deleteChannelGroup(params);
+        // console.log("Response : ", res);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // let params = {
+        //     uuid: "5be8e565-a96b-4de1-bb1b-a013928414f9",
+        //     url: "url--XXX",
+        // };
+
+        // let res = await pipePlus.group.addItem(params);
+        // console.log("Response : ", res);
+
+    }
+
     useEffect(() => {
         handleVideoId()
+
     }, [streamId])
 
     return (
@@ -143,8 +277,11 @@ export const Watch = () => {
                                 </div>
                                 <p className="text-slate-200 text-sm">{formatNumbers(uploaderSubscriberCount)} subscribers</p>
                             </div>
-                            <Button className="mx-5">
+                            <Button className="mx-5" onClick={() => handleChannelSubscribe()}>
                                 Subscribe
+                            </Button>
+                            <Button className="mx-5" onClick={() => handleChannelUnSubscribe()}>
+                                Unsubscribe
                             </Button>
                         </div>
                         <div className="flex gap-4">
@@ -178,7 +315,7 @@ export const Watch = () => {
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
                         return <Link to={item.url} key={uuid()} onClick={() => handleStreamChange()}>
-                            <ResultCard video={item} size="sm"/>
+                            <ResultCard video={item} size="sm" />
                         </Link>
                     })
                 }

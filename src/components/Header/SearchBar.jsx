@@ -3,8 +3,8 @@ import { BsSearch } from 'react-icons/bs';
 import { RxCross1 } from 'react-icons/rx';
 import { useDispatch, useSelector } from 'react-redux';
 import { setInputFocus, setSearchQuery, setSearchResults, setSearchSuggestions } from '../../redux/searchbar/actions';
-import { pipePlus } from '../../apis/pipePlus';
 import { useNavigate } from 'react-router-dom';
+import { pipePlus } from '../../apis';
 
 export const SearchBar = () => {
     const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export const SearchBar = () => {
         dispatch(setSearchQuery(query));
 
         if (query.length > 0) {
-            let data = await pipePlus.getSuggestions(query);
+            let data = await pipePlus.feed.suggestions(query);
 
             dispatch(setSearchSuggestions([...data]));
         }
@@ -33,7 +33,7 @@ export const SearchBar = () => {
 
     const handleSearchSubmit = async () => {
         if (searchQuery.length > 0) {
-            let { items, nextpage } = await pipePlus.getSearchData(searchQuery);
+            let { items, nextpage } = await pipePlus.feed.search(searchQuery);
 
             dispatch(setSearchSuggestions([]));
             dispatch(setSearchResults([...items]));
