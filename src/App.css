@@ -1,3 +1,81 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #0f0f0f;
+}
+
+.bw {
+  border: 1px solid white;
+}
+
+.br {
+  border: 1px solid rgb(163, 16, 16);
+}
+
+.bg {
+  border: 1px solid rgb(64, 68, 64);
+}
+
+/* styles.css */
+/* For webkit-based browsers */
+.pp_input::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  /* Adjust the thumb width */
+  height: 10px;
+  /* Adjust the thumb height */
+  background-color: transparent;
+  /* Thumb color */
+  border: 2px solid transparent;
+  /* Thumb border color */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  /* Show a pointer cursor on hover */
+  transition: all 0.2s ease;
+}
+
+/* For Firefox */
+.pp_input::-moz-range-thumb {
+  width: 10px;
+  /* Adjust the thumb width */
+  height: 10px;
+  /* Adjust the thumb height */
+  background-color: transparent;
+  /* Thumb color */
+  border: 2px solid transparent;
+  /* Thumb border color */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  /* Show a pointer cursor on hover */
+  transition: all 0.2s ease;
+}
+
+/* styles.css */
+/* For webkit-based browsers */
+.pp_input:hover::-webkit-slider-thumb {
+  background-color: red;
+  /* Thumb color */
+  border: 2px solid red;
+  /* Thumb border color */
+}
+
+/* For Firefox */
+.pp_input:hover::-moz-range-thumb {
+  background-color: red;
+  /* Thumb color */
+  border: 2px solid red;
+  /* Thumb border color */
+}
+
+.font_oswald {
+  font-family: 'Oswald', sans-serif;
+}
+
+.font_roboto {
+  font-family: 'Roboto', sans-serif;
 }
