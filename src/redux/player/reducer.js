@@ -15,6 +15,8 @@ import {
     SET_COMMENT_DATA,
     SET_PREV_PROGRESS,
     SET_STREAM_UUID,
+    SET_STREAM_LOADING,
+    SET_AUTO_PLAY_REQUEST,
 } from './actionTypes';
 
 const initialState = {
@@ -69,6 +71,8 @@ const initialState = {
     },
     prevProgress: 0,
     streamUuid: "",
+    streamLoading: false,
+    autoPlayRequest: false,
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -153,6 +157,16 @@ const reducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 streamUuid: payload
+            }
+        case SET_STREAM_LOADING:
+            return {
+                ...state,
+                streamLoading: payload
+            }
+        case SET_AUTO_PLAY_REQUEST:
+            return {
+                ...state,
+                autoPlayRequest: payload
             }
         default:
             return state
