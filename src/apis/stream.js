@@ -130,7 +130,7 @@ export const stream = {
     removeFromHistory: async (streamUuid) => {
         const { data, error } = await supabase
             .from('pipe_videos')
-            .update({ progress: 0 })
+            .update({ progress: 0, watched: false })
             .eq('uuid', streamUuid)
             .select()
         if (isValid(error)) {
@@ -144,7 +144,7 @@ export const stream = {
     updatePlayed: async ({ streamUuid, progressAmount }) => {
         const { data, error } = await supabase
             .from('pipe_videos')
-            .update({ progress: progressAmount })
+            .update({ progress: progressAmount, watched: false })
             .eq('uuid', streamUuid)
             .select()
 
