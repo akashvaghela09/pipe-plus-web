@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPlayStatus, setAudioPlayer, setVideoPlayer, setStreamValues, setQualityUpdateStatus, setStreamPlayed, setPrevProgress, setStreamLoading, setAutoPlayRequest } from '../../redux/player/actions';
 import ReactPlayer from 'react-player'
 import { pipePlus } from '../../apis';
-import { isValid, waitFor } from '../../utils';
+import { isValid } from '../../utils';
 
 export const Player = () => {
     const dispatch = useDispatch();
@@ -61,9 +61,16 @@ export const Player = () => {
 
             if (isPlaying === true && (prevProgress === null || prevProgress === 0) && playedSeconds > 10) {
                 // console.log("Updating played seconds ...", playedSeconds);
+                let watched = false;
+
+                if(e.played >= 0.90) {
+                    watched = true;
+                }
+                
                 let params = {
                     streamUuid: streamUuid,
-                    progressAmount: playedSeconds
+                    progressAmount: playedSeconds,
+                    watched: watched
                 }
 
                 let res = await pipePlus.stream.updatePlayed(params);
@@ -82,11 +89,6 @@ export const Player = () => {
             // If the video has played to the end, pause it
             if (+e.played === 1) {
                 dispatch(setPlayStatus(false));
-            }
-
-            // console.log("Played seconds: ", playedSeconds);
-            if(e.played >= 0.90) {
-                console.log("Mark as Watched ...");
             }
         }
     };
