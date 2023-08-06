@@ -77,12 +77,20 @@ export const Watch = () => {
         dispatch(setStreamSource(streamSource));
         dispatch(setAvailableQualities(qualityList));
         dispatch(setStreamMetadata(newMetaData));
+
+        return newMetaData;
     }
 
     const handleStreamChange = () => {
         dispatch(setPlayStatus(false));
         dispatch(setStreamLoading(true));
         dispatch(setAutoPlayRequest(true));
+
+        resetStreamMetadata();
+    }
+
+    const resetStreamMetadata = () => {
+        console.log("Resetting stream metadata...");
 
         dispatch(setStreamValues({
             seek: 0,
@@ -262,8 +270,11 @@ export const Watch = () => {
 
     }
 
-    const handleStreamPlayed = async () => {
-        if (!isValid(user.id) || !isValid(streamId) || !isValid(streamMetadata.title)) {
+    const handleStreamPlayed = async (data) => {
+        const currentUser = await getUser();
+        const { title, views, uploadDate, duration, thumbnailUrl, uploader, uploaderAvatar, category } = data;
+
+        if (!isValid(currentUser.id) || !isValid(streamId)) {
             return;
         }
 
@@ -278,7 +289,7 @@ export const Watch = () => {
             uploader: uploader,
             uploader_avatar: uploaderAvatar,
             uuid: uuid(),
-            user_id: user.id,
+            user_id: currentUser.id,
             watched: false,
             watch_later: false,
             liked: false,
@@ -288,22 +299,22 @@ export const Watch = () => {
         };
 
         let newRes = await pipePlus.stream.addPlayed(params);
-        let progress = newRes.progress;
-        let streamUuid = newRes.data[0].uuid;
+        let progress = newRes?.progress;
+        let streamUuid = newRes?.data[0]?.uuid;
 
         dispatch(setPrevProgress(progress));
         dispatch(setStreamUUID(streamUuid));
     }
 
-    useEffect(() => {
-        handleVideoId()
+    const updateStreamState = async () => {
+        resetStreamMetadata();
+        let dataRes = await handleVideoId();
+        handleStreamPlayed(dataRes);
+    }
 
+    useEffect(() => {
+        updateStreamState()
     }, [streamId])
-
-    useEffect(() => {
-        handleStreamPlayed()
-
-    }, [user, streamMetadata])
 
     return (
         <div className="w-10/12 max-w-10/12 pt-6 flex justify-center">
@@ -363,10 +374,10 @@ export const Watch = () => {
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
                         return <Link to={item.url} key={uuid()} >
-                                <div onClick={() => handleStreamChange()}>
-                                    <ResultCard video={item} size="sm" />
-                                </div>
-                            </Link>
+                            <div onClick={() => handleStreamChange()}>
+                                <ResultCard video={item} size="sm" />
+                            </div>
+                        </Link>
                     })
                 }
             </div>
