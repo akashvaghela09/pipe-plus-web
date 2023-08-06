@@ -13,6 +13,8 @@ import {
     SET_QUALITY_UPDATE_STATUS,
     SET_STREAM_PLAYED,
     SET_COMMENT_DATA,
+    SET_PREV_PROGRESS,
+    SET_STREAM_UUID,
 } from './actionTypes';
 
 const initialState = {
@@ -64,7 +66,9 @@ const initialState = {
         replyIndex: -1,
         isLoading: false,
         nextPage: null,
-    }
+    },
+    prevProgress: 0,
+    streamUuid: "",
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -139,6 +143,16 @@ const reducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 commentData: payload
+            }
+        case SET_PREV_PROGRESS:
+            return {
+                ...state,
+                prevProgress: payload
+            }
+        case SET_STREAM_UUID:
+            return {
+                ...state,
+                streamUuid: payload
             }
         default:
             return state
