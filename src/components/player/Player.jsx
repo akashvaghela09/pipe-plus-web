@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controls, ProgressBar } from "../";
 import { useDispatch, useSelector } from 'react-redux';
-import { setPlayStatus, setAudioPlayer, setVideoPlayer, setStreamValues, setQualityUpdateStatus, setStreamPlayed } from '../../redux/player/actions';
+import { setPlayStatus, setAudioPlayer, setVideoPlayer, setStreamValues, setQualityUpdateStatus, setStreamPlayed, setPrevProgress } from '../../redux/player/actions';
 import ReactPlayer from 'react-player'
+import { pipePlus } from '../../apis';
+import { isValid } from '../../utils';
 
 export const Player = () => {
     const dispatch = useDispatch();
@@ -19,11 +21,14 @@ export const Player = () => {
         volume,
         streamValues,
         streamSource,
-        streamMetadata: { thumbnailUrl, playableStreams, duration },
+        streamMetadata,
         selectedQuality,
         qualityUpdateStatus,
-        streamPlayed
+        streamPlayed,
+        prevProgress,
+        streamUuid
     } = useSelector(state => state.player);
+    const { thumbnailUrl, playableStreams, duration } = streamMetadata;
 
     const [isReady, setIsReady] = useState(true);
     const [streamUrl, setStreamUrl] = useState(streamSource.url);
@@ -35,9 +40,29 @@ export const Player = () => {
         setIsAudioPlaying(!isAudioPlaying);
     }
 
-    const processVideoStreamValues = (e) => {
+    const processVideoStreamValues = async (e) => {
         if (isReady === true) {
-            dispatch(setStreamValues({ ...streamValues, ...e, seek: e.playedSeconds }));
+
+            let playedSeconds = e.playedSeconds;
+
+            if (isValid(prevProgress)) {
+                videoPlayer.seekTo(prevProgress, 'seconds');
+                audioPlayer.seekTo(prevProgress, 'seconds');
+
+                dispatch(setPrevProgress(null));
+                dispatch(setStreamValues({ ...streamValues, seek: prevProgress, played: prevProgress / duration }));
+            } else {
+                dispatch(setStreamValues({ ...streamValues, ...e, seek: playedSeconds }));
+            }
+
+            if (isPlaying === true && prevProgress === null) {
+                let params = {
+                    streamUuid: streamUuid,
+                    progressAmount: playedSeconds
+                }
+
+                let res = await pipePlus.stream.updatePlayed(params);
+            }
 
             // If the video has played to the end, pause it
             if (+e.played === 100) {
@@ -61,7 +86,7 @@ export const Player = () => {
     const handleBufferingEnd = () => {
         // console.log("Buffering ended ...", new Date().toLocaleTimeString());
 
-        if(qualityUpdateStatus === true) {
+        if (qualityUpdateStatus === true) {
             let seconds = streamPlayed;
             // console.log("Quality update status is true ...", streamPlayed);
             dispatch(setPlayStatus(true));
@@ -115,7 +140,6 @@ export const Player = () => {
 
     return (
         <div className={`bg-black transition-all  ${smPortrait} ${smLandscape} ${mdPortrait} ${isFullScreen ? mdLandscapeFullScreen : mdLandscape}`}>
-            {/* <video src={streamUrl} controls width={"450px"}/> */}
             {
                 isReady ?
                     <div className='w-full'>
@@ -145,7 +169,7 @@ export const Player = () => {
                             onProgress={processVideoStreamValues}
                         />
                         <div onClick={() => handlePlayback()} className='w-full h-full absolute top-0 left-0 opacity-100' />
-                        
+
                         <ProgressBar />
                         <Controls handlePlayback={handlePlayback} />
                     </div>
