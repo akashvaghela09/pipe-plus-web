@@ -3,7 +3,7 @@ import { Button, CommentSection, DescriptionCard, Player, ResultCard } from "../
 import { useEffect } from "react";
 import { pipePlus } from "../apis";
 import { useDispatch, useSelector } from "react-redux";
-import { setAvailableQualities, setCommentData, setPlayStatus, setPrevProgress, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamUUID, setStreamValues } from "../redux/player/actions";
+import { setAutoPlayRequest, setAvailableQualities, setCommentData, setPlayStatus, setPrevProgress, setStreamLoading, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamUUID, setStreamValues } from "../redux/player/actions";
 import { v4 as uuid } from 'uuid';
 import { formatNumbers, getUser, isValid } from "../utils";
 import { TiTick } from 'react-icons/ti';
@@ -72,12 +72,18 @@ export const Watch = () => {
             qualityList.push(obj);
         }
 
+        let newMetaData = { ...res, playableStreams: listOfStreams };
+        // console.log("New Meta Data : ", newMetaData);
         dispatch(setStreamSource(streamSource));
         dispatch(setAvailableQualities(qualityList));
-        dispatch(setStreamMetadata({ ...res, playableStreams: listOfStreams }));
+        dispatch(setStreamMetadata(newMetaData));
     }
 
-    const handleStreamChange = (stream) => {
+    const handleStreamChange = () => {
+        dispatch(setPlayStatus(false));
+        dispatch(setStreamLoading(true));
+        dispatch(setAutoPlayRequest(true));
+
         dispatch(setStreamValues({
             seek: 0,
             duration: 0,
@@ -257,7 +263,7 @@ export const Watch = () => {
     }
 
     const handleStreamPlayed = async () => {
-        if (!isValid(user.id) || !isValid(streamId)) {
+        if (!isValid(user.id) || !isValid(streamId) || !isValid(streamMetadata.title)) {
             return;
         }
 
@@ -297,7 +303,7 @@ export const Watch = () => {
     useEffect(() => {
         handleStreamPlayed()
 
-    }, [user, streamId])
+    }, [user, streamMetadata])
 
     return (
         <div className="w-10/12 max-w-10/12 pt-6 flex justify-center">
@@ -356,9 +362,11 @@ export const Watch = () => {
             <div className="w-[450px] min-w-[450px] h-fit pl-5 flex flex-col gap-4">
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
-                        return <Link to={item.url} key={uuid()} onClick={() => handleStreamChange()}>
-                            <ResultCard video={item} size="sm" />
-                        </Link>
+                        return <Link to={item.url} key={uuid()} >
+                                <div onClick={() => handleStreamChange()}>
+                                    <ResultCard video={item} size="sm" />
+                                </div>
+                            </Link>
                     })
                 }
             </div>
