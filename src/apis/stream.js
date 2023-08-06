@@ -141,10 +141,10 @@ export const stream = {
         return { success: true, data };
     },
 
-    updatePlayed: async ({ streamUuid, progressAmount }) => {
+    updatePlayed: async ({ streamUuid, progressAmount, watched }) => {
         const { data, error } = await supabase
             .from('pipe_videos')
-            .update({ progress: progressAmount, watched: false })
+            .update({ progress: progressAmount, watched: watched })
             .eq('uuid', streamUuid)
             .select()
 
