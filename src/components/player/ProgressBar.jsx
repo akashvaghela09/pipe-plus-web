@@ -10,8 +10,8 @@ export const ProgressBar = () => {
 
     // TODO: Only Seek when player is ready
     const handleSeek = (time) => {
-        console.log("Seeking to: ", time);
-        console.log("isPlaying: ", isPlaying);
+        // console.log("Seeking to: ", time);
+        // console.log("isPlaying: ", isPlaying);
         videoPlayer.seekTo(time, 'seconds');
         audioPlayer.seekTo(time, 'seconds');
 

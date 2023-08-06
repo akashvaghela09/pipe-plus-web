@@ -13,6 +13,10 @@ import {
     SET_QUALITY_UPDATE_STATUS,
     SET_STREAM_PLAYED,
     SET_COMMENT_DATA,
+    SET_PREV_PROGRESS,
+    SET_STREAM_UUID,
+    SET_STREAM_LOADING,
+    SET_AUTO_PLAY_REQUEST,
 } from './actionTypes';
 
 export const setAudioPlayer = (payload) => {
@@ -109,6 +113,34 @@ export const setStreamPlayed = (payload) => {
 export const setCommentData = (payload) => {
     return {
         type: SET_COMMENT_DATA,
+        payload
+    }
+}
+
+export const setPrevProgress = (payload) => {
+    return {
+        type: SET_PREV_PROGRESS,
+        payload
+    }
+}
+
+export const setStreamUUID = (payload) => {
+    return {
+        type: SET_STREAM_UUID,
+        payload
+    }
+}
+
+export const setStreamLoading = (payload) => {
+    return {
+        type: SET_STREAM_LOADING,
+        payload
+    }
+}
+
+export const setAutoPlayRequest = (payload) => {
+    return {
+        type: SET_AUTO_PLAY_REQUEST,
         payload
     }
 }

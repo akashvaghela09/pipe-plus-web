@@ -5,7 +5,7 @@ import { RiEqualizerLine } from 'react-icons/ri';
 import { BsSpeedometer2 } from 'react-icons/bs';
 import { IconWrapper } from '../';
 import { useSelector, useDispatch } from 'react-redux';
-import { setPlayStatus, setPlaybackRate, setQualityUpdateStatus, setStreamPlayed, setStreamQuality, setStreamSource } from '../../redux/player/actions';
+import { setPlayStatus, setPlaybackRate, setQualityUpdateStatus, setStreamLoading, setStreamPlayed, setStreamQuality, setStreamSource } from '../../redux/player/actions';
 
 export const PlayerSettings = (props, ref) => {
     const dispatch = useDispatch();
@@ -34,6 +34,7 @@ export const PlayerSettings = (props, ref) => {
     }
 
     const handlePlaybackQualityChange = (value) => {
+        dispatch(setStreamLoading(true));
         dispatch(setQualityUpdateStatus(true));
         dispatch(setStreamSource({}));
         dispatch(setStreamQuality(value));
@@ -45,7 +46,7 @@ export const PlayerSettings = (props, ref) => {
         let newSource = {...playableStreams[value][0]};
         dispatch(setStreamSource(newSource));
 
-        console.log("New source ...", newSource);
+        dispatch(setStreamLoading(false));
     }
 
     // Settings Options Components ******************************************************

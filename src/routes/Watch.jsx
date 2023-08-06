@@ -3,9 +3,9 @@ import { Button, CommentSection, DescriptionCard, Player, ResultCard } from "../
 import { useEffect } from "react";
 import { pipePlus } from "../apis";
 import { useDispatch, useSelector } from "react-redux";
-import { setAvailableQualities, setCommentData, setPlayStatus, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamValues } from "../redux/player/actions";
+import { setAutoPlayRequest, setAvailableQualities, setCommentData, setPlayStatus, setPrevProgress, setStreamLoading, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamUUID, setStreamValues } from "../redux/player/actions";
 import { v4 as uuid } from 'uuid';
-import { formatNumbers, getUser } from "../utils";
+import { formatNumbers, getUser, isValid } from "../utils";
 import { TiTick } from 'react-icons/ti';
 import { BiSolidDownload, BiLike, BiDislike } from 'react-icons/bi';
 import { Link, useNavigate } from "react-router-dom";
@@ -18,7 +18,7 @@ export const Watch = () => {
     const streamId = searchParams.get('v')
 
     const { authStatus } = useSelector(state => state.auth);
-    const { streamMetadata, selectedQuality, streamSource } = useSelector(state => state.player);
+    const { streamMetadata, selectedQuality, streamSource, videoPlayer, audioPlayer, streamValues } = useSelector(state => state.player);
     const { user } = useSelector(state => state.auth);
     const {
         title,
@@ -72,12 +72,18 @@ export const Watch = () => {
             qualityList.push(obj);
         }
 
+        let newMetaData = { ...res, playableStreams: listOfStreams };
+        // console.log("New Meta Data : ", newMetaData);
         dispatch(setStreamSource(streamSource));
         dispatch(setAvailableQualities(qualityList));
-        dispatch(setStreamMetadata({ ...res, playableStreams: listOfStreams }));
+        dispatch(setStreamMetadata(newMetaData));
     }
 
-    const handleStreamChange = (stream) => {
+    const handleStreamChange = () => {
+        dispatch(setPlayStatus(false));
+        dispatch(setStreamLoading(true));
+        dispatch(setAutoPlayRequest(true));
+
         dispatch(setStreamValues({
             seek: 0,
             duration: 0,
@@ -124,6 +130,10 @@ export const Watch = () => {
             isLoading: false,
             nextPage: null,
         }))
+
+        dispatch(setStreamUUID(""));
+
+        dispatch(setPrevProgress(0));
     }
 
     const handleChannelSubscribe = async () => {
@@ -252,10 +262,48 @@ export const Watch = () => {
 
     }
 
+    const handleStreamPlayed = async () => {
+        if (!isValid(user.id) || !isValid(streamId) || !isValid(streamMetadata.title)) {
+            return;
+        }
+
+        // Add stream to played list
+        let params = {
+            created_at: new Date(),
+            title: title,
+            views: views,
+            upload_date: uploadDate,
+            duration: duration,
+            thumbnail: thumbnailUrl,
+            uploader: uploader,
+            uploader_avatar: uploaderAvatar,
+            uuid: uuid(),
+            user_id: user.id,
+            watched: false,
+            watch_later: false,
+            liked: false,
+            category: category,
+            progress: 0,
+            stream_id: streamId
+        };
+
+        let newRes = await pipePlus.stream.addPlayed(params);
+        let progress = newRes.progress;
+        let streamUuid = newRes.data[0].uuid;
+
+        dispatch(setPrevProgress(progress));
+        dispatch(setStreamUUID(streamUuid));
+    }
+
     useEffect(() => {
         handleVideoId()
 
     }, [streamId])
+
+    useEffect(() => {
+        handleStreamPlayed()
+
+    }, [user, streamMetadata])
 
     return (
         <div className="w-10/12 max-w-10/12 pt-6 flex justify-center">
@@ -314,9 +362,11 @@ export const Watch = () => {
             <div className="w-[450px] min-w-[450px] h-fit pl-5 flex flex-col gap-4">
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
-                        return <Link to={item.url} key={uuid()} onClick={() => handleStreamChange()}>
-                            <ResultCard video={item} size="sm" />
-                        </Link>
+                        return <Link to={item.url} key={uuid()} >
+                                <div onClick={() => handleStreamChange()}>
+                                    <ResultCard video={item} size="sm" />
+                                </div>
+                            </Link>
                     })
                 }
             </div>
