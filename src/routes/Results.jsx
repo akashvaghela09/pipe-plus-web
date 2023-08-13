@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ButtonWrapper } from '../components/theme/ButtonWrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterType } from '../redux/searchbar/actions';
-import { ChannelCard, PlaylistCard, ResultCard } from '../components';
+import { ChannelCard, PlaylistCard, SuggestionCard } from '../components';
 import { Link } from 'react-router-dom';
 
 export const Results = () => {
@@ -40,7 +40,7 @@ export const Results = () => {
                         searchResults.length > 0 && searchResults.map((item, index) => {
                             if (item.type === "stream") {
                                 return <Link to={item.url}>
-                                    <ResultCard key={index} video={item} />
+                                    <SuggestionCard key={index} video={item} />
                                 </Link>
                             } else if (item.type === "channel") {
                                 return <Link to={item.url}>
