@@ -57,3 +57,24 @@ export function formatDate(input) {
       date: `${day} ${months[monthIndex]}`
   };
 }
+
+export function formatIndianNumbering(number) {
+  if (typeof number !== 'number') {
+      return "Invalid input";
+  }
+
+  let numStr = number.toString();
+  // If number is less than 1000, return it as is
+  if (numStr.length <= 3) {
+      return numStr;
+  }
+
+  // For the last 3 digits
+  let lastThree = numStr.substring(numStr.length - 3);
+  const otherNumbers = numStr.substring(0, numStr.length - 3);
+  if (otherNumbers !== '') {
+      lastThree = ',' + lastThree;
+  }
+
+  return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+}
