@@ -18,7 +18,8 @@ export {
     formatNumbers, 
     formatTime,
     formatDate,
-    formatIndianNumbering 
+    formatIndianNumbering,
+    formatReadableDate 
 } from './numbers';
 
 // Localstorage utils

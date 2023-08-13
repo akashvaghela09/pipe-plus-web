@@ -78,3 +78,39 @@ export function formatIndianNumbering(number) {
 
   return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
 }
+
+export function formatReadableDate(inputDate) {
+  const date = new Date(inputDate);
+  const now = new Date();
+
+  // Calculate the time difference in milliseconds
+  const diffMilliseconds = now - date;
+  const diffSeconds = diffMilliseconds / 1000;
+  const diffMinutes = diffSeconds / 60;
+  const diffHours = diffMinutes / 60;
+  const diffDays = diffHours / 24;
+
+  if (diffMinutes < 60) {
+      return `${Math.floor(diffMinutes)} minutes ago`;
+  }
+
+  if (diffHours < 24) {
+      return `${Math.floor(diffHours)} hours ago`;
+  }
+
+  if (diffDays === 1) {
+      return 'Yesterday';
+  }
+
+  if (diffDays < 30) {
+      return `${Math.floor(diffDays)} days ago`;
+  }
+
+  const diffMonths = diffDays / 30;
+  if (diffMonths < 12) {
+      return `${Math.floor(diffMonths)} month${Math.floor(diffMonths) > 1 ? 's' : ''} ago`;
+  }
+
+  const diffYears = diffMonths / 12;
+  return `${Math.floor(diffYears)} year${Math.floor(diffYears) > 1 ? 's' : ''} ago`;
+}
