@@ -19,8 +19,8 @@ export const Comment = ({ comment, iconSize = "lg" }) => {
 
     return (
         <div className='border-slate-700 flex'>
-            <img loading='lazy' className={`${iconSize === "lg" ? "h-10 w-10" : "h-7 w-7"} rounded-full`} src={thumbnail} />
-            <div className='px-4'>
+            <img loading='lazy' className={`${iconSize === "lg" ? "h-7 w-7 lg:h-10 lg:w-10" : "h-7 w-7"} rounded-full`} src={thumbnail} />
+            <div className='px-2 lg:px-4'>
                 {
                     pinned && <p className='text-slate-100 text-opacity-50 text-xs flex items-center'> <TbPinned className='text-lg' /> Pinned by <b className='mx-1'>{uploader}</b></p>
                 }
