@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import { Button, CommentSection, DescriptionCard, Player, ResultCard } from "../components";
-import { useEffect } from "react";
+import { Button, CommentSection, DescriptionCard, DescriptionWithTitle, Player, SuggestionCard, VideoCard } from "../components";
+import { useEffect, useState } from "react";
 import { pipePlus } from "../apis";
 import { useDispatch, useSelector } from "react-redux";
 import { setAutoPlayRequest, setAvailableQualities, setCommentData, setPlayStatus, setPrevProgress, setStreamLoading, setStreamMetadata, setStreamPlayed, setStreamSource, setStreamUUID, setStreamValues } from "../redux/player/actions";
@@ -16,10 +16,10 @@ export const Watch = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const streamId = searchParams.get('v')
+    const [isDescriptionOpen, setDescriptionOpen] = useState(false);
 
-    const { authStatus } = useSelector(state => state.auth);
+    const { authStatus, user } = useSelector(state => state.auth);
     const { streamMetadata, selectedQuality, streamSource, videoPlayer, audioPlayer, streamValues } = useSelector(state => state.player);
-    const { user } = useSelector(state => state.auth);
     const {
         title,
         thumbnailUrl,
@@ -90,7 +90,6 @@ export const Watch = () => {
     }
 
     const resetStreamMetadata = () => {
-        console.log("Resetting stream metadata...");
 
         dispatch(setStreamValues({
             seek: 0,
@@ -131,13 +130,13 @@ export const Watch = () => {
 
         dispatch(setStreamPlayed(0))
 
-        dispatch(setCommentData({
-            list: [],
-            count: 0,
-            replyIndex: -1,
-            isLoading: false,
-            nextPage: null,
-        }))
+        // dispatch(setCommentData({
+        //     list: [],
+        //     count: 0,
+        //     replyIndex: -1,
+        //     isLoading: false,
+        //     nextPage: null,
+        // }))
 
         dispatch(setStreamUUID(""));
 
@@ -271,10 +270,9 @@ export const Watch = () => {
     }
 
     const handleStreamPlayed = async (data) => {
-        const currentUser = await getUser();
         const { title, views, uploadDate, duration, thumbnailUrl, uploader, uploaderAvatar, category } = data;
 
-        if (!isValid(currentUser.id) || !isValid(streamId)) {
+        if (!isValid(user.id) || !isValid(streamId)) {
             return;
         }
 
@@ -289,7 +287,7 @@ export const Watch = () => {
             uploader: uploader,
             uploader_avatar: uploaderAvatar,
             uuid: uuid(),
-            user_id: currentUser.id,
+            user_id: user.id,
             watched: false,
             watch_later: false,
             liked: false,
@@ -312,54 +310,77 @@ export const Watch = () => {
         handleStreamPlayed(dataRes);
     }
 
+    const handleDescriptionExpand = (value) => {
+        setDescriptionOpen(value)
+    }
+
     useEffect(() => {
         updateStreamState()
-    }, [streamId])
+    }, [streamId, user])
 
     return (
-        <div className="w-10/12 max-w-10/12 pt-6 flex justify-center">
-            <div className="grow flex flex-col gap-4">
+        <div className="w-full md:w-10/12 md:max-w-10/12 lg:pt-6 flex flex-col lg:flex-row justify-center">
+            <div className="grow flex flex-col lg:gap-4">
                 {/* Player section */}
                 <Player />
 
                 {/* Stream Metadata section */}
-                <div className="flex flex-col gap-2">
-                    <p className="text-slate-100 text-xl font-medium font-sans">{title}</p>
+                <div className="relative flex flex-col p-2 gap-1">
+                    <p className="text-slate-100 text-xl font-medium font-sans line-clamp-2 hidden lg:flex">{title}</p>
 
-                    <div className="flex justify-between items-center">
-                        <div className="py-2 flex gap-3 justify-start items-center">
-                            <img loading="lazy" src={uploaderAvatar} className="rounded-full" />
-                            <div className="flex flex-col justify-center">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-slate-200 text-sm">{uploader} </p>
-                                    <TiTick className="bg-slate-50 bg-opacity-50 rounded-full text-xs" />
-                                </div>
-                                <p className="text-slate-200 text-sm">{formatNumbers(uploaderSubscriberCount)} subscribers</p>
-                            </div>
-                            <Button className="mx-5" onClick={() => handleChannelSubscribe()}>
-                                Subscribe
-                            </Button>
-                            <Button className="mx-5" onClick={() => handleChannelUnSubscribe()}>
-                                Unsubscribe
-                            </Button>
-                        </div>
-                        <div className="flex gap-4">
-                            <Button>
-                                <BiLike className="text-xl" />
-                                {formatNumbers(likes)}
-                            </Button>
-                            <Button>
-                                <BiDislike className="text-xl" />
-                                {formatNumbers(dislikes)}
-                            </Button>
-                            <Button>
-                                <BiSolidDownload className="text-xl" />
-                                Download
-                            </Button>
-                        </div>
+                    <div className="">
+                        {/* Description For small screens */}
+                        <DescriptionWithTitle
+                            title={title}
+                            views={views}
+                            likes={likes}
+                            uploadDate={uploadDate}
+                            description={description}
+                            isDescriptionOpen={isDescriptionOpen}
+                            handleDescriptionExpand={handleDescriptionExpand}
+                        />
                     </div>
 
-                    <div className="w-full">
+                    {
+                        isDescriptionOpen === false &&
+                        <div className="flex flex-col gap-1 lg:flex-row w-full justify-between items-center">
+                            <div className="py-2 w-full flex gap-3 justify-start items-center">
+                                <img loading="lazy" src={uploaderAvatar} className="rounded-full w-7 h-7" />
+                                <div className="flex w-full justify-between items-center">
+                                    <div className="flex gap-2 lg:flex-col justify-center items-center">
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-slate-200 font-bold lg:text-sm items-baseline line-clamp-1">{uploader} </p>
+                                            <TiTick className="bg-slate-50 bg-opacity-50 rounded-full text-xs hidden lg:flex" />
+                                        </div>
+                                        <span className="text-opacity-50 lg:text-opacity-100 text-slate-200 text-sm flex"><p className="p-2">{formatNumbers(uploaderSubscriberCount)}</p> <p className="hidden lg:flex">subscribers</p></span>
+                                    </div>
+                                    <Button type="white" className="bg-slate-100 text-black text-sm" onClick={() => handleChannelSubscribe()}>
+                                        Subscribe
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="flex w-full justify-between lg:gap-4">
+                                <Button className="text-sm lg:text-xl">
+                                    <BiLike className="" />
+                                    {formatNumbers(likes)}
+                                </Button>
+                                <Button className="text-sm lg:text-xl">
+                                    <BiDislike className="" />
+                                    {formatNumbers(dislikes)}
+                                </Button>
+                                <Button className="text-sm lg:text-xl">
+                                    <BiSolidDownload className="" />
+                                    Download
+                                </Button>
+                                <Button className="text-sm lg:text-xl">
+                                    <BiSolidDownload className="" />
+                                    Share
+                                </Button>
+                            </div>
+                        </div>
+
+                    }
+                    <div className="w-full hidden lg:flex">
                         <DescriptionCard
                             views={views}
                             uploadDate={uploadDate}
@@ -370,12 +391,26 @@ export const Watch = () => {
                     <CommentSection streamId={streamId} />
                 </div>
             </div>
-            <div className="w-[450px] min-w-[450px] h-fit pl-5 flex flex-col gap-4">
+            {
+                isDescriptionOpen === false &&
+                <div className="hidden max-w-[50%] w-[450px] h-fit pl-5 lg:flex flex-col gap-4">
+                    {
+                        relatedStreams.length > 0 && relatedStreams.map((item) => {
+                            return <Link to={item.url} key={uuid()} >
+                                <div onClick={() => handleStreamChange()}>
+                                    <SuggestionCard video={item} size="sm" />
+                                </div>
+                            </Link>
+                        })
+                    }
+                </div>
+            }
+            <div className="w-full h-full grid grid-cols-1 p-4 gap-5 lg:hidden">
                 {
                     relatedStreams.length > 0 && relatedStreams.map((item) => {
                         return <Link to={item.url} key={uuid()} >
                             <div onClick={() => handleStreamChange()}>
-                                <ResultCard video={item} size="sm" />
+                                <VideoCard video={item} quality="high" />
                             </div>
                         </Link>
                     })
