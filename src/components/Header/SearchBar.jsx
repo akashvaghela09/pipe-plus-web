@@ -94,7 +94,7 @@ export const SearchBar = () => {
     return (
         <div
             ref={searchBarRef}
-            className='relative  bg-[#121212] flex w-[600px] rounded-full'
+            className='relative  bg-[#121212] lg:flex w-[600px] rounded-full hidden'
         >
             <div className='rounded-l-full grow flex items-stretch' style={{ border: isFocused === true ? "1px solid #1C62B9" : "1px solid #303030" }}>
                 {
