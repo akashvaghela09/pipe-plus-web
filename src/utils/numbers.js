@@ -32,3 +32,28 @@ export const formatTime = (seconds) => {
 
   return timeString;
 }
+
+export function formatDate(input) {
+  const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const parts = input.split('-');
+  if (parts.length !== 3) {
+      throw new Error('Invalid input format');
+  }
+
+  const year = parts[0];
+  const monthIndex = parseInt(parts[1], 10) - 1; // because months are 0-indexed in JavaScript
+  const day = parts[2];
+
+  if (monthIndex < 0 || monthIndex > 11) {
+      throw new Error('Invalid month');
+  }
+
+  return {
+      year: parseInt(year, 10),
+      date: `${day} ${months[monthIndex]}`
+  };
+}

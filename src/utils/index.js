@@ -16,7 +16,8 @@ export {
 // Number formatting utils
 export { 
     formatNumbers, 
-    formatTime 
+    formatTime,
+    formatDate 
 } from './numbers';
 
 // Localstorage utils
