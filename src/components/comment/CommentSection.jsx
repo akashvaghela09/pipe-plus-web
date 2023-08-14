@@ -7,12 +7,15 @@ import { v4 as uuid } from 'uuid';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCommentData } from '../../redux/player/actions';
 import { pipePlus } from '../../apis';
+import { CgClose } from 'react-icons/cg';
 
 export const CommentSection = ({ streamId }) => {
     const dispatch = useDispatch();
 
     const { commentData } = useSelector(state => state.player);
     const { count, list, nextPage, replyIndex, isLoading } = commentData;
+    const [commentExpanded, setCommentExpanded] = useState(false);
+    const windowWidth = window.innerWidth;
 
     const commentSectionRef = useRef(null);
 
@@ -39,14 +42,14 @@ export const CommentSection = ({ streamId }) => {
         dispatch(setCommentData({
             ...commentData,
             isLoading: true,
-            }));
+        }));
 
         if (nextPage === null || nextPage === undefined || nextPage === '') {
             console.log("No more comments to load, reached the end");
             dispatch(setCommentData({
                 ...commentData,
                 isLoading: false,
-                }));
+            }));
             return;
         }
 
@@ -142,6 +145,10 @@ export const CommentSection = ({ streamId }) => {
 
     useEffect(() => {
         const handleScroll = () => {
+            if (windowWidth < 400) {
+                return;
+            }
+
             const commentSectionElement = commentSectionRef.current;
             let commentSectionHeight = commentSectionElement.clientHeight;
             let pageScroll = window.scrollY;
@@ -158,78 +165,114 @@ export const CommentSection = ({ streamId }) => {
         return () => {
             document.removeEventListener('scroll', handleScroll);
         };
-    }, [list, replyIndex]);
+    }, [list, replyIndex, streamId]);
 
     return (
-        <div className='my-5 py-5'>
-            <h1 className='text-slate-100 '><b>{count}</b> Comments</h1>
+        <div className='mt-3 lg:my-5 lg:py-5 bg-[#272727] lg:bg-transparent rounded-lg'>
 
-            <div ref={commentSectionRef}>
-                {
-                    list.map((comment, index) => {
-                        return (
-                            <div className='my-4' key={comment.id}>
-                                {/* Stream comment */}
-                                <Comment comment={comment}/>
-                                {
-                                    (comment.repliesPage !== null || comment.repliesPage === "Done") &&
-                                    <div className='ml-14'>
-                                        <div onClick={() => handleReplyOpen(index, comment.repliesPage)} className='flex items-center text-sm hover:bg-[#275D8C] hover:bg-opacity-75 rounded-full p-2 px-3 cursor-pointer w-fit'>
-                                            {
-                                                comment.replyOpen === true ?
-                                                    <PiCaretUpBold className='text-xl text-[#3EA6FF]' />
-                                                    :
-                                                    <PiCaretDownBold className='text-xl text-[#3EA6FF]' />
-                                            }
-                                            <span className='mx-1 text-[#3EA6FF]'>{formatNumbers(comment.replyCount)} replies</span>
-                                        </div>
+            {/* for small screens | header */}
+            {
+                commentExpanded === false &&
+                <span onClick={() => setCommentExpanded(true)} className='flex text-slate-100 lg:hidden gap-2 items-baseline p-2'>
+                    <p className='text-lg font-bold'>Comments</p>
+                    <p className='text-slate-100 text-opacity-50 text-sm'>{count}</p>
+                </span>
+            }
 
-                                        {
-                                            comment.replyOpen === true &&
-                                            <div className='h-fit flex flex-col gap-4 py-4'>
-                                                {/* Individual comment reply*/}
+            {/* for small screens | comment section */}
+            {
+                commentExpanded &&
+                <div className='lg:hidden'>
+                    <div onClick={() => setCommentExpanded(false)} className='flex items-center justify-between p-2'>
+                        <span className='flex text-slate-100 lg:hidden gap-2 items-baseline'>
+                            <p className='text-lg font-bold'>Comments</p>
+                            <p className='text-slate-100 text-opacity-50 text-sm'>{count}</p>
+                        </span>
+                        <CgClose className='text-slate-100 text-opacity-50 text-2xl' />
+                    </div>
+                </div>
+            }
+
+            {/* for large screens | header */}
+            <h1 className='text-slate-100 lg:flex hidden'><b>{count}</b> Comments</h1>
+
+            {/* comment section */}
+            {
+                (windowWidth > 400 || commentExpanded === true) &&
+                <div ref={commentSectionRef} className='p-2'>
+                    {
+                        list.map((comment, index) => {
+                            return (
+                                <div className='my-4' key={comment.id}>
+                                    {/* Stream comment */}
+                                    <Comment comment={comment} />
+                                    {
+                                        (comment.repliesPage !== null || comment.repliesPage === "Done") &&
+                                        <div className='ml-14'>
+                                            <div onClick={() => handleReplyOpen(index, comment.repliesPage)} className='flex items-center text-sm hover:bg-[#275D8C] hover:bg-opacity-75 rounded-full p-2 px-3 cursor-pointer w-fit'>
                                                 {
-                                                    comment.replies.map((reply, index) => {
-                                                        return (
-                                                            <Comment key={reply.id} comment={reply} iconSize="sm"/>
+                                                    comment.replyOpen === true ?
+                                                        <PiCaretUpBold className='text-xl text-[#3EA6FF]' />
+                                                        :
+                                                        <PiCaretDownBold className='text-xl text-[#3EA6FF]' />
+                                                }
+                                                <span className='mx-1 text-[#3EA6FF]'>{formatNumbers(comment.replyCount)} replies</span>
+                                            </div>
+
+                                            {
+                                                comment.replyOpen === true &&
+                                                <div className='h-fit flex flex-col gap-4 py-4'>
+                                                    {/* Individual comment reply*/}
+                                                    {
+                                                        comment.replies.map((reply, index) => {
+                                                            return (
+                                                                <Comment key={reply.id} comment={reply} iconSize="sm" />
+                                                            )
+                                                        }
                                                         )
                                                     }
-                                                    )
-                                                }
 
-                                                {/* Show more button if nextpage is available */}
-                                                {
-                                                    (comment.repliesPage !== null && comment.repliesPage !== "Done" && comment.loading === false) &&
-                                                    <div onClick={() => loadCommentReplies(index)} className='flex items-center text-sm hover:bg-[#275D8C] hover:bg-opacity-75 rounded-full p-2 px-3 cursor-pointer w-fit'>
-                                                        <BsArrowReturnRight className='text-xl text-[#3EA6FF]' />
-                                                        <span className='mx-1 text-[#3EA6FF]'>Show More replies</span>
-                                                    </div>
-                                                }
+                                                    {/* Show more button if nextpage is available */}
+                                                    {
+                                                        (comment.repliesPage !== null && comment.repliesPage !== "Done" && comment.loading === false) &&
+                                                        <div onClick={() => loadCommentReplies(index)} className='flex items-center text-sm hover:bg-[#275D8C] hover:bg-opacity-75 rounded-full p-2 px-3 cursor-pointer w-fit'>
+                                                            <BsArrowReturnRight className='text-xl text-[#3EA6FF]' />
+                                                            <span className='mx-1 text-[#3EA6FF]'>Show More replies</span>
+                                                        </div>
+                                                    }
 
-                                                {/* Loading while we get replies from server */}
-                                                {
-                                                    comment.loading === true &&
-                                                    <div className='p-4'>
-                                                        <Spinner size="sm" />
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        )
-                    })
-                }
+                                                    {/* Loading while we get replies from server */}
+                                                    {
+                                                        comment.loading === true &&
+                                                        <div className='p-4'>
+                                                            <Spinner size="sm" />
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            )
+                        })
+                    }
 
-                {/* Load while we get next page comments */}
-                {
-                    isLoading &&
-                    <div className='flex justify-center py-4 h-28'>
-                        <Spinner size="sm" />
-                    </div>
-                }
-            </div>
+                    {/* Load while we get next page comments */}
+                    {
+                        isLoading &&
+                        <div className='flex justify-center py-4 h-28'>
+                            <Spinner size="sm" />
+                        </div>
+                    }
+
+                    {
+                        (nextPage !== null && nextPage !== undefined && nextPage !== '') &&
+                        <div className='flex justify-center lg:hidden' onClick={() => loadMoreComments()}>
+                            <PiCaretDownBold className='text-2xl text-slate-100' />
+                        </div>
+                    }
+                </div>
+            }
         </div>
     )
 }

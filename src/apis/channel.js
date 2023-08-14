@@ -117,6 +117,25 @@ export const channel = {
         }
 
         return status;
+    },
+
+    isSubscribed: async (user_id, uploader_id) => {
+        const res = await supabase
+            .from('pipe_subscriptions')
+            .select('user_id, uploader_id')
+            .eq('user_id', user_id)
+            .eq('uploader_id', uploader_id)
+
+        if (isValid(res.error)) {
+            console.log("Failed while checking subscription", res.error);
+            return { success: false, error: res.error }
+        }
+
+        if (res.data.length > 0) {
+            return { success: true, subscribed: true }
+        }
+
+        return { success: true, subscribed: false }
     }
 };
 

@@ -29,15 +29,20 @@ export const Home = () => {
     }, [])
 
     return (
-        <div className="h-full flex flex-wrap justify-start gap-4 p-10" style={{marginLeft: sidepanelOpen ? "270px": "0px"}}>
+        <div className="h-full w-full flex">
             {
-                trendingStreams.length > 0 && trendingStreams.map((item) => {
-                    return <Link to={item.url} key={item.id}>
-                    <VideoCard key={item.title} video={item} />
-                    </Link>
-                })
-
+                sidepanelOpen && <div className="w-[300px] hidden sm:border-spacing-0 md:flex" />
             }
+            <div className="w-full h-full grid grid-cols-1 p-4 gap-5 home_page">
+                {
+                    trendingStreams.length > 0 && trendingStreams.map((item) => {
+                        return <Link to={item.url} key={item.id}>
+                            <VideoCard key={item.title} video={item} />
+                        </Link>
+                    })
+
+                }
+            </div>
         </div>
     )
 }

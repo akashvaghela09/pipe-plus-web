@@ -16,7 +16,10 @@ export {
 // Number formatting utils
 export { 
     formatNumbers, 
-    formatTime 
+    formatTime,
+    formatDate,
+    formatIndianNumbering,
+    formatReadableDate 
 } from './numbers';
 
 // Localstorage utils

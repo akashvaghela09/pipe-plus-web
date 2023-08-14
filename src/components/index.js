@@ -12,6 +12,7 @@ export { ButtonWrapper } from "./theme/ButtonWrapper.jsx";
 export { Spinner } from "./theme/Spinner.jsx";
 export { Button } from "./theme/Button.jsx";
 export { DescriptionCard } from "./DescriptionCard.jsx";
+export { DescriptionWithTitle } from "./DescriptionWithTitle.jsx";
 
 // UI components
 export { Logo } from "./Header/Logo.jsx";
@@ -20,8 +21,8 @@ export { SearchBar } from "./Header/SearchBar.jsx";
 export { Comment } from "./comment/Comment.jsx";
 export { CommentSection } from "./comment/CommentSection.jsx";
 export { Footer } from "./Footer.jsx";
-export { VideoCard } from "./VideoCard.jsx";
-export { ResultCard } from "./ResultCard.jsx";
+export { VideoCard } from "./videocard/VideoCard.jsx";
+export { SuggestionCard } from "./SuggestionCard.jsx";
 export { PlaylistCard } from "./PlaylistCard.jsx";
 export { ChannelCard } from "./ChannelCard.jsx";
 export { Sidepanel } from "./Sidepanel/Sidepanel.jsx";

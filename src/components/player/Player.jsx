@@ -166,9 +166,9 @@ export const Player = () => {
     }, [isPlaying]);
 
     const smPortrait = "relative aspect-video";
-    const smLandscape = "landscape:absolute landscape:top-1/2 landscape:left-1/2 landscape:transform landscape:-translate-x-1/2 landscape:-translate-y-1/2 landscape:h-full landscape:w-fit";
+    const smLandscape = "landscape:absolute landscape:top-1/2 landscape:left-1/2 landscape:transform landscape:-translate-x-1/2 landscape:-translate-y-1/2 landscape:h-full landscape:w-auto";
     const mdPortrait = "";
-    const mdLandscape = "md:landscape:relative md:landscape:top-0 md:landscape:left-0 md:landscape:transform-none md:landscape:translate-x-0 md:landscape:translate-y-0 md:landscape:w-full md:landscape:h-fit md:min-w-[60%]";
+    const mdLandscape = "md:landscape:relative md:landscape:top-0 md:landscape:left-0 md:landscape:transform-none md:landscape:translate-x-0 md:landscape:translate-y-0 md:landscape:w-full md:landscape:h-fit md:w-[60%]";
     const mdLandscapeFullScreen = "";
 
     return (
