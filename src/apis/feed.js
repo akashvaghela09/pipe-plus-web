@@ -60,6 +60,19 @@ export const feed = {
         }
 
         return data;
+    },
+
+    userFeed: async (channelList) => {
+        let data = null;
+
+        try {
+            let res = await axios.get(`${config.baseUrl}/feed/unauthenticated?channels=${channelList.join(",")}`);
+            data = [ ...res.data ];
+        } catch (error) {
+            console.log("Failed while fetching user feed data", error);
+        }
+
+        return data;
     }
 };
 
