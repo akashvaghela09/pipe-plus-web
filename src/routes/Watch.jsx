@@ -17,6 +17,7 @@ export const Watch = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const streamId = searchParams.get('v')
     const [isDescriptionOpen, setDescriptionOpen] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
 
     const { authStatus, user } = useSelector(state => state.auth);
     const { streamMetadata, selectedQuality, streamSource, videoPlayer, audioPlayer, streamValues } = useSelector(state => state.player);
@@ -158,7 +159,10 @@ export const Watch = () => {
         }
 
         let res = await pipePlus.channel.subscribe(data);
-        console.log("Subscription response : ", res);
+
+        if(res.subscribed === true) {
+            setIsSubscribed(true);
+        }
     }
 
     const handleChannelUnSubscribe = async () => {
@@ -167,7 +171,10 @@ export const Watch = () => {
         let uploader_id = uploaderUrl.split("/").pop();
 
         let res = await pipePlus.channel.unsubscribe(user.id, uploader_id);
-        console.log("Subscription response : ", res);
+
+        if(res.unsubscribed === true) {
+            setIsSubscribed(false);
+        }
     }
 
     const validate = async () => {
@@ -307,11 +314,25 @@ export const Watch = () => {
     const updateStreamState = async () => {
         resetStreamMetadata();
         let dataRes = await handleVideoId();
-        handleStreamPlayed(dataRes);
+        await handleStreamPlayed(dataRes);
+        await checkSubscription(dataRes.uploaderUrl);
     }
 
     const handleDescriptionExpand = (value) => {
         setDescriptionOpen(value)
+    }
+
+    const checkSubscription = async (channelUrl) => {
+        if (!isValid(user.id) || !isValid(channelUrl)) {
+            return;
+        }
+
+        let uploader_id = channelUrl.split("/").pop();
+        let res = await pipePlus.channel.isSubscribed(user.id, uploader_id);
+
+        if(res.subscribed === true) {
+            setIsSubscribed(true);
+        }
     }
 
     useEffect(() => {
@@ -328,7 +349,7 @@ export const Watch = () => {
                 <div className="relative flex flex-col p-2 gap-1">
                     <p className="text-slate-100 text-xl font-medium font-sans line-clamp-2 hidden lg:flex">{title}</p>
 
-                    <div className="">
+                    <div className="lg:hidden">
                         {/* Description For small screens */}
                         <DescriptionWithTitle
                             title={title}
@@ -354,9 +375,16 @@ export const Watch = () => {
                                         </div>
                                         <span className="text-opacity-50 lg:text-opacity-100 text-slate-200 text-sm flex"><p className="p-2">{formatNumbers(uploaderSubscriberCount)}</p> <p className="hidden lg:flex">subscribers</p></span>
                                     </div>
-                                    <Button type="white" className="bg-slate-100 text-black text-sm" onClick={() => handleChannelSubscribe()}>
-                                        Subscribe
-                                    </Button>
+                                    {
+                                        isSubscribed === true ?
+                                            <Button className="text-sm" onClick={() => handleChannelUnSubscribe()}>
+                                                Unsubscribe
+                                            </Button>
+                                            :
+                                            <Button type="white" className="bg-slate-100 text-black text-sm" onClick={() => handleChannelSubscribe()}>
+                                                Subscribe
+                                            </Button>
+                                    }
                                 </div>
                             </div>
                             <div className="flex w-full justify-between lg:gap-4">
