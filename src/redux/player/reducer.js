@@ -50,6 +50,7 @@ const initialState = {
         thumbnailUrl: "",
         title: "",
         uploadDate: "",
+        uploaded: "",
         uploader: "",
         uploaderAvatar: "",
         uploaderSubscriberCount: 0,

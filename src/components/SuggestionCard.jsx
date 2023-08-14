@@ -3,7 +3,7 @@ import { TiTick } from 'react-icons/ti';
 import { FiRadio } from 'react-icons/fi';
 import { formatTime, formatNumbers } from '../utils';
 
-export const ResultCard = ({ video, size = "lg" }) => {
+export const SuggestionCard = ({ video, size = "lg" }) => {
     const {
         title,
         type,
@@ -73,7 +73,7 @@ export const ResultCard = ({ video, size = "lg" }) => {
                     }
 
                     {size === "sm" &&
-                        <span className=''>
+                        <span className='w-fit'>
                             <div className='flex items-center justify-start gap-2 mt-1'>
                                 <p className='text-slate-100 opacity-50 text-xs line-clamp-1 hover:opacity-70 cursor-pointer'>{uploaderName}</p>
                                 {
@@ -96,7 +96,7 @@ export const ResultCard = ({ video, size = "lg" }) => {
 
                     {size === "lg" &&
                         <span>
-                            <div className='flex items-start justify-start gap-2'>
+                            <div className='flex items-start justify-start gap-2 br'>
                                 <p className='text-slate-100 opacity-50 text-sm'>{formatNumbers(views)} views</p>
                                 {
                                     uploadedDate && <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
@@ -104,7 +104,7 @@ export const ResultCard = ({ video, size = "lg" }) => {
                             </div>
 
 
-                            <div className='flex justify-start items-center gap-2 my-4'>
+                            <div className='flex justify-start items-center gap-2 my-4 br'>
                                 <img loading='lazy' src={uploaderAvatar} className='w-7 h-7 rounded-full' />
                                 <div className='flex items-center justify-start gap-2'>
                                     <p className='text-slate-100 opacity-50 text-sm line-clamp-1 hover:opacity-70 cursor-pointer'>{uploaderName}</p>
