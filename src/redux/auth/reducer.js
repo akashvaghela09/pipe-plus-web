@@ -4,7 +4,7 @@ import {
 } from './actionTypes';
 
 const initialState = {
-    authStatus: false,
+    authStatus: null,
     user: {
         email: "",
         id: "",
