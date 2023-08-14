@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { TiTick } from 'react-icons/ti';
-import { formatTime, formatNumbers } from '../../utils';
+import { formatTime, formatNumbers, formatReadableDate } from '../../utils';
 
 export const VideoCard = ({ video }) => {
     const {
@@ -8,6 +8,7 @@ export const VideoCard = ({ video }) => {
         duration,
         thumbnail,
         uploadedDate,
+        uploaded,
         uploaderAvatar,
         uploaderName,
         // uploaderUrl, 
@@ -40,7 +41,10 @@ export const VideoCard = ({ video }) => {
                     <div className='flex items-start justify-start gap-2'>
                         <p className='text-slate-100 opacity-50 text-sm'>{formatNumbers(views)} views</p>
                         {
-                            uploadedDate && <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
+                            uploadedDate ? 
+                            <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {uploadedDate}</span>
+                            :
+                            <span className='text-slate-100 opacity-50 text-sm flex gap-2'><p>•</p> {formatReadableDate(uploaded)}</span>
                         }
                     </div>
                 </div>
