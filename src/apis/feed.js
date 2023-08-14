@@ -20,7 +20,7 @@ export const feed = {
 
         try {
             let res = await axios.get(`${config.baseUrl}/suggestions?query=${query}`);
-            data = [...res.data];
+            data = [...res?.data];
         } catch (error) {
             console.log("Failed while fetching suggestions", error);
         }

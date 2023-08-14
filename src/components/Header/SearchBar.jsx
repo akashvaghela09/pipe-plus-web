@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setInputFocus, setSearchQuery, setSearchResults, setSearchSuggestions } from '../../redux/searchbar/actions';
 import { useNavigate } from 'react-router-dom';
 import { pipePlus } from '../../apis';
+import { isValid } from '../../utils';
 
 export const SearchBar = () => {
     const dispatch = useDispatch();
@@ -27,7 +28,9 @@ export const SearchBar = () => {
         if (query.length > 0) {
             let data = await pipePlus.feed.suggestions(query);
 
-            dispatch(setSearchSuggestions([...data]));
+            if(isValid(data)) {
+                dispatch(setSearchSuggestions([...data]));
+            }
         }
     }
 
