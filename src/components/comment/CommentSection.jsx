@@ -13,9 +13,9 @@ export const CommentSection = ({ streamId }) => {
     const dispatch = useDispatch();
 
     const { commentData } = useSelector(state => state.player);
+    const { deviceType } = useSelector(state => state.app);
     const { count, list, nextPage, replyIndex, isLoading } = commentData;
     const [commentExpanded, setCommentExpanded] = useState(false);
-    const windowWidth = window.innerWidth;
 
     const commentSectionRef = useRef(null);
 
@@ -145,7 +145,7 @@ export const CommentSection = ({ streamId }) => {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (windowWidth < 400) {
+            if (deviceType === "mobile") {
                 return;
             }
 
@@ -198,7 +198,7 @@ export const CommentSection = ({ streamId }) => {
 
             {/* comment section */}
             {
-                (windowWidth > 400 || commentExpanded === true) &&
+                (deviceType === "desktop" || commentExpanded === true) &&
                 <div ref={commentSectionRef} className='p-2'>
                     {
                         list.map((comment, index) => {
