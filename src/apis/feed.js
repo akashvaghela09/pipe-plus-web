@@ -66,7 +66,7 @@ export const feed = {
         let data = null;
 
         try {
-            let res = await axios.get(`${config.baseUrl}/feed/unauthenticated?channels=${channelList.join(",")}`);
+            let res = await axios.get(`${config.feedUrl}/feed/unauthenticated?channels=${channelList.join(",")}`);
             data = [ ...res.data ];
         } catch (error) {
             console.log("Failed while fetching user feed data", error);

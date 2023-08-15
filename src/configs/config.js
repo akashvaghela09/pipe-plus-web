@@ -10,7 +10,6 @@ const randomInstance = (instances) => {
 };
 
 export const config = {
-  baseUrl: process.env.REACT_APP_PIPED_BASE_URL || randomInstance(dataUrls).url,
-  streamUrl: randomInstance(streamUrls).url,
-  feedUrl: randomInstance(feedUrls).url,
+  baseUrl: process.env.REACT_APP_PIPED_BASE_URL || randomInstance(instanceList).url,
+  feedUrl: "https://pipedapi.kavin.rocks",
 };
