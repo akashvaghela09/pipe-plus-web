@@ -26,7 +26,7 @@ function randomInstance() {
 }
 
 const config = {
-  baseUrl: randomInstance(),
+  baseUrl: process.env.REACT_APP_PIPED_BASE_URL || randomInstance(),
 };
 
 module.exports = {
