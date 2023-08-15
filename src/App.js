@@ -1,20 +1,25 @@
 import { useEffect } from 'react';
 import './App.css';
-import { Header, Sidepanel } from './components';
+import { Footer, Header, Sidepanel } from './components';
 import { AllRoutes } from './routes';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUser, getSession, isValid, updateOnboardingStatus, saveData } from './utils';
 import { setAuthStatus, setUser } from './redux/auth/actions';
 import { setDeviceType } from './redux/app/actions';
+import { useLocation } from 'react-router-dom';
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const { deviceType } = useSelector(state => state.app);
 
   const checkAuthStatus = async () => {
 
     const session = await getSession();
 
-    if(!isValid(session)) {
+    if (!isValid(session)) {
       dispatch(setAuthStatus(false));
       console.log("User is not authenticated");
       return;
@@ -58,16 +63,29 @@ function App() {
     }
   }
 
+  const allowedRoutes = [
+    "/",
+    "/trending",
+    "/subscriptions",
+    "/channel-groups",
+    "/library",
+    "/watch"
+  ]
+
   useEffect(() => {
     checkAuthStatus();
     checkDeviceType();
   }, []);
 
   return (
-    <div className="App flex flex-col">
+    <div className="App flex flex-col pb-16">
       <Header />
       <Sidepanel />
       <AllRoutes />
+
+      {
+        allowedRoutes.includes(currentPath) === true && <Footer />
+      }
     </div>
   );
 }
