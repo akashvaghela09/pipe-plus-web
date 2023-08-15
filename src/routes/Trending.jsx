@@ -5,34 +5,26 @@ import { VideoCard } from "../components";
 import { Link } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
-export const Subscriptions = () => {
+export const Trending = () => {
     const { sidepanelOpen } = useSelector((state) => state.app);
-    const { authStatus, user } = useSelector((state) => state.auth);
     const [feedStreams, setFeedStreams] = useState([]);
 
-    const fetchUserFeed = async () => {
-        if (authStatus === null) {
-            console.log("Not yet authenticated");
-            return;
+    const fetchTrendingStreams = async () => {
+        try {
+            let res = await pipePlus.feed.trending("IN");
+            res.forEach((item) => {
+                item.id = uuid();
+            });
+
+            setFeedStreams(res);
+        } catch (error) {
+            console.log("Something went wrong");
         }
-
-        let subList = await pipePlus.user.subscriptions(user.id);
-
-        let res = await pipePlus.feed.userFeed(subList.list);
-        res.forEach((item) => {
-            item.id = uuid();
-
-            let streamId = item.url.split("=")[1];
-            let highResThumbnail = `https://img.youtube.com/vi/${streamId}/maxresdefault.jpg`;
-            item.thumbnail = highResThumbnail;
-        });
-
-        setFeedStreams([...res]);
     }
 
     useEffect(() => {
-        fetchUserFeed();
-    }, [authStatus])
+        fetchTrendingStreams();
+    }, [])
 
     return (
         <div className="h-full w-full flex">
@@ -46,12 +38,6 @@ export const Subscriptions = () => {
                             <VideoCard key={item.title} video={item} />
                         </Link>
                     })
-                }
-
-                {
-                    feedStreams.length === 0 && <div className="w-full h-full flex justify-center items-center">
-                        <h1 className="text-2xl font-bold text-slate-100">No new videos</h1>
-                    </div>
                 }
             </div>
         </div>
