@@ -13,7 +13,7 @@ export const Home = () => {
     const [feedStreams, setFeedStreams] = useState([]);
 
     const fetchTrendingStreams = async () => {
-        if(authStatus === null){
+        if (authStatus === null) {
             console.log("Not yet authenticated");
             return;
         }
@@ -42,14 +42,14 @@ export const Home = () => {
 
         // only save 30 results
         res = res.slice(0, 30);
-        
+
         setFeedStreams([...res]);
     }
 
     const fetchUserFeed = async () => {
         let subList = await pipePlus.user.subscriptions(user.id);
-    
-        if(subList.list.length === 0 || !isValid(subList.list)){
+
+        if (subList.list.length === 0 || !isValid(subList.list)) {
             fetchTrendingStreams();
             return;
         }
@@ -64,21 +64,21 @@ export const Home = () => {
         });
 
         // only save 30 results
-        // res = res.slice(0, 30);
-        
+        res = res.slice(0, 30);
+
         setFeedStreams([...res]);
     }
 
     const fetchFeed = async () => {
-        if(authStatus === null){
+        if (authStatus === null) {
             console.log("Not yet authenticated");
             return;
         }
 
-        if(authStatus === false){
+        if (authStatus === false) {
             fetchDummyFeed();
             return;
-        } else if (authStatus === true){
+        } else if (authStatus === true) {
             fetchUserFeed();
             return;
         }
