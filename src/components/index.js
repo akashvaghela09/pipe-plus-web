@@ -20,7 +20,7 @@ export { Header } from "./Header/Header.jsx";
 export { SearchBar } from "./Header/SearchBar.jsx";
 export { Comment } from "./comment/Comment.jsx";
 export { CommentSection } from "./comment/CommentSection.jsx";
-export { Footer } from "./Footer.jsx";
+export { Footer } from "./footer/Footer.jsx";
 export { VideoCard } from "./videocard/VideoCard.jsx";
 export { SuggestionCard } from "./SuggestionCard.jsx";
 export { PlaylistCard } from "./PlaylistCard.jsx";
