@@ -1,0 +1,50 @@
+[
+    {
+        "url": "https://pipedapi.kavin.rocks",
+        "stream": true,
+        "data": true,
+        "feed": true
+    },
+    {
+        "url": "https://api-piped.mha.fi",
+        "stream": true,
+        "data": true,
+        "feed": true
+    },
+    {
+        "url": "https://piped-api.garudalinux.org",
+        "stream": false,
+        "data": true,
+        "feed": true
+    },
+    {
+        "url": "https://pipedapi.aeong.one",
+        "stream": false,
+        "data": true,
+        "feed": false
+    },
+    {
+        "url": "https://piped-api.lunar.icu",
+        "stream": true,
+        "data": true,
+        "feed": false
+    },
+    {
+        "url": "https://ytapi.dc09.ru",
+        "stream": false,
+        "data": true,
+        "feed": true
+    },
+    {
+        "url": "https://pipedapi-libre.kavin.rocks",
+        "stream": false,
+        "data": true,
+        "feed": true
+    },
+    {
+        "url": "https://piped-api.privacy.com.de",
+        "stream": false,
+        "data": true,
+        "feed": true
+    }
+]
