@@ -179,10 +179,10 @@ export const Player = () => {
                         {/* Play Audio Stream */}
                         <ReactPlayer
                             ref={audioRef}
-                            url={trackUrl}
+                            // url={trackUrl}
                             volume={volume}
                             playbackRate={playbackRate}
-                            playing={isAudioPlaying}
+                            // playing={isAudioPlaying}
                             width={0}
                             height={0}
                         />
