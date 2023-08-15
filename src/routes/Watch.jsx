@@ -41,12 +41,19 @@ export const Watch = () => {
     const handleVideoId = async () => {
         let res = await pipePlus.stream.get(streamId);
         const { videoStreams } = res;
-
+        
+        // TODO : remove this in future        
+        let signleStreams = videoStreams.filter((item) => {
+            // filter out/remove streams with audio 
+            return item.videoOnly === false && item.mimeType === "video/mp4";
+        })
+        res.videoStreams = signleStreams;
+        
         // prepare stream resources 
         let listOfStreams = {};
 
-        for (let i = 0; i < videoStreams.length; i++) {
-            let stream = videoStreams[i];
+        for (let i = 0; i < signleStreams.length; i++) {
+            let stream = signleStreams[i];
 
             if (listOfStreams[stream.quality]) {
                 listOfStreams[stream.quality].push(stream);
